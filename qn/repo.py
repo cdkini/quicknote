@@ -1,11 +1,11 @@
 import pathlib
 from typing import List, Tuple
 
-from qn.shell import ShellManager
+from qn.shell import Shell
 
 
 class Repo:
-    def __init__(self, root: pathlib.Path, shell: ShellManager) -> None:
+    def __init__(self, root: pathlib.Path, shell: Shell) -> None:
         self._root = root
         self._shell = shell
 
@@ -18,15 +18,15 @@ class Repo:
 
     def open_notes(self, names: Tuple[str, ...]) -> None:
         if len(names) == 0:
-            raise NotImplementedError("FZF integration not yet been implemented")
+            notes = self._retrieve_all_note_paths()
+            names = self._shell.fzf(notes)
 
         paths = self._collect_paths_from_names(names)
         self._shell.open(paths)
 
     def list_notes(self) -> List[str]:
-        notes = [note.name for note in self._root.iterdir() if note.is_file()]
-        notes.sort()
-        return notes
+        notes = self._retrieve_all_note_paths()
+        return sorted(map(lambda n: n.name, notes))
 
     def delete_notes(self, names: Tuple[str, ...]) -> None:
         if len(names) == 0:
@@ -35,6 +35,9 @@ class Repo:
         paths = self._collect_paths_from_names(names)
         for path in paths:
             path.unlink()
+
+    def _retrieve_all_note_paths(self) -> List[pathlib.Path]:
+        return list(filter(lambda n: n.is_file(), self._root.iterdir()))
 
     def _collect_paths_from_names(self, names: Tuple[str, ...]) -> List[pathlib.Path]:
         paths = []
