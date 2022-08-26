@@ -18,7 +18,7 @@ def test_add_note_existing_name_raises_error(tmp_path):
     with pytest.raises(ValueError) as e:
         repo.add_note(file_name)
 
-    assert f"Note '{file_name}' already exists; please use 'qn open'" == str(e.value)
+    assert f"Note '{file_name}' already exists" in str(e.value)
 
 
 def test_add_note_invokes_editor(tmp_path):
@@ -42,7 +42,7 @@ def test_open_note_nonexistent_name_raises_error(tmp_path):
         file_names = ("foo.md",)
         repo.open_notes(file_names)
 
-    assert f"Note '{file_names[0]}' does not exist; please use 'qn add'" == str(e.value)
+    assert f"Note '{file_names[0]}' does not exist" in str(e.value)
 
 
 def test_open_note_invokes_editor(tmp_path):
@@ -75,3 +75,34 @@ def test_list_notes(tmp_path):
     notes = repo.list_notes()
 
     assert sorted(file_names) == notes
+
+
+def test_delete_notes_nonexistent_name_raises_error(tmp_path):
+    root = tmp_path
+    editor = mock.MagicMock()
+
+    repo = Repo(root=root, editor=editor)
+
+    with pytest.raises(ValueError) as e:
+        file_names = ("foo.md",)
+        repo.delete_notes(file_names)
+
+    assert f"Note '{file_names[0]}' does not exist" in str(e.value)
+
+
+def test_delete_notes_invokes_editor(tmp_path):
+    root = tmp_path
+    editor = mock.MagicMock()
+
+    repo = Repo(root=root, editor=editor)
+
+    file_names = ("foo.md", "bar.md", "baz.md")
+    paths = []
+    for file_name in file_names:
+        path = root.joinpath(file_name)
+        path.touch()
+        paths.append(path)
+
+    repo.delete_notes(file_names)
+
+    assert all(not path.exists() for path in paths)

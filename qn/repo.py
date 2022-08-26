@@ -18,22 +18,33 @@ class Repo:
 
     def open_notes(self, names: Tuple[str, ...]) -> None:
         if len(names) == 0:
-            raise NotImplementedError("FZF has not yet been implemented")
+            raise NotImplementedError("FZF integration not yet been implemented")
 
-        paths = []
-        for name in names:
-            path = self._determine_path_from_name(name)
-            if not path.exists():
-                raise ValueError(f"Note '{name}' does not exist; please use 'qn add'")
-
-            paths.append(path)
-
+        paths = self._collect_paths_from_names(names)
         self._editor.open(paths)
 
     def list_notes(self) -> List[str]:
         notes = [note.name for note in self._root.iterdir() if note.is_file()]
         notes.sort()
         return notes
+
+    def delete_notes(self, names: Tuple[str, ...]) -> None:
+        if len(names) == 0:
+            raise NotImplementedError("FZF integration has not yet been implemented")
+
+        paths = self._collect_paths_from_names(names)
+        for path in paths:
+            path.unlink()
+
+    def _collect_paths_from_names(self, names: Tuple[str, ...]) -> List[pathlib.Path]:
+        paths = []
+        for name in names:
+            path = self._determine_path_from_name(name)
+            if not path.exists():
+                raise ValueError(f"Note '{name}' does not exist")
+            paths.append(path)
+
+        return paths
 
     def _determine_path_from_name(self, name: str) -> pathlib.Path:
         if not name.endswith(".md"):

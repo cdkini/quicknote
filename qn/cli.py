@@ -50,8 +50,9 @@ def grep_cmd(repo: Repo) -> None:
 
 @cli.command("rm")
 @click.pass_obj
-def rm_cmd(repo: Repo) -> None:
-    pass
+@click.argument("names", nargs=-1)
+def rm_cmd(repo: Repo, names: Tuple[str]) -> None:
+    repo.delete_notes(names)
 
 
 if __name__ == "__main__":
