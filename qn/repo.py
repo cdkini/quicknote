@@ -1,5 +1,5 @@
 import pathlib
-from typing import Tuple
+from typing import List, Tuple
 
 from qn.editor import Editor
 
@@ -29,6 +29,11 @@ class Repo:
             paths.append(path)
 
         self._editor.open(paths)
+
+    def list_notes(self) -> List[str]:
+        notes = [note.name for note in self._root.iterdir() if note.is_file()]
+        notes.sort()
+        return notes
 
     def _determine_path_from_name(self, name: str) -> pathlib.Path:
         if not name.endswith(".md"):

@@ -34,6 +34,14 @@ def open_cmd(repo: Repo, names: Tuple[str]) -> None:
     repo.open_notes(names)
 
 
+@cli.command("ls")
+@click.pass_obj
+def ls_cmd(repo: Repo) -> None:
+    notes = repo.list_notes()
+    for note in notes:
+        click.echo(note)
+
+
 @cli.command("grep")
 @click.pass_obj
 def grep_cmd(repo: Repo) -> None:

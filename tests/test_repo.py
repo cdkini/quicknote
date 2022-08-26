@@ -59,3 +59,19 @@ def test_open_note_invokes_editor(tmp_path):
     repo.open_notes(file_names)
 
     editor.open.assert_called()
+
+
+def test_list_notes(tmp_path):
+    root = tmp_path
+    editor = mock.MagicMock()
+
+    repo = Repo(root=root, editor=editor)
+
+    file_names = ["foo.md", "bar.md", "baz.md"]
+    for file_name in file_names:
+        existing_file = root.joinpath(file_name)
+        existing_file.touch()
+
+    notes = repo.list_notes()
+
+    assert sorted(file_names) == notes
