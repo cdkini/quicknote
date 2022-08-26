@@ -18,8 +18,7 @@ class Repo:
 
     def open_notes(self, names: Tuple[str, ...]) -> None:
         if len(names) == 0:
-            notes = self._retrieve_all_note_paths()
-            names = self._shell.fzf(notes)
+            names = self._interactively_retrieve_names()
 
         paths = self._collect_paths_from_names(names)
         self._shell.open(paths)
@@ -30,11 +29,17 @@ class Repo:
 
     def delete_notes(self, names: Tuple[str, ...]) -> None:
         if len(names) == 0:
-            raise NotImplementedError("FZF integration has not yet been implemented")
+            names = self._interactively_retrieve_names()
 
         paths = self._collect_paths_from_names(names)
         for path in paths:
+            self._shell.user_confirmation(f"Delete '{path.stem}' [y/n]: ")
             path.unlink()
+
+    def _interactively_retrieve_names(self) -> Tuple[str, ...]:
+        notes = self._retrieve_all_note_paths()
+        names = self._shell.fzf(notes)
+        return names
 
     def _retrieve_all_note_paths(self) -> List[pathlib.Path]:
         return list(filter(lambda n: n.is_file(), self._root.iterdir()))

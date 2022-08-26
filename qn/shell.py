@@ -25,3 +25,9 @@ class Shell:
         choices = [path.absolute().as_posix() for path in paths]
         results = self._fzf.prompt(choices, Shell.FZF_OPTS)
         return tuple(results)
+
+    def user_confirmation(self, prompt: str) -> bool:
+        answer = input(prompt)
+        if answer.lower() in ("y", "yes"):
+            return True
+        return False
