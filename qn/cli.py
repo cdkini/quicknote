@@ -15,31 +15,25 @@ def cli(ctx: click.Context) -> None:
 
 @cli.command("add")
 @click.pass_obj
-def add_cmd() -> None:
+def add_cmd(repo: Repo) -> None:
     pass
 
 
 @cli.command("open")
 @click.pass_obj
-def open_cmd() -> None:
+def open_cmd(repo: Repo) -> None:
     pass
 
 
 @cli.command("grep")
 @click.pass_obj
-def grep_cmd() -> None:
-    pass
-
-
-@cli.command("ls")
-@click.pass_obj
-def ls_cmd() -> None:
+def grep_cmd(repo: Repo) -> None:
     pass
 
 
 @cli.command("rm")
 @click.pass_obj
-def rm_cmd() -> None:
+def rm_cmd(repo: Repo) -> None:
     pass
 
 

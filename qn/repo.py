@@ -1,10 +1,19 @@
 import os
 import pathlib
+from typing import Dict
 
 
 class Repo:
     def __init__(self, root: pathlib.Path):
         self._root = root
+        self._notes = self._init_notes()
+
+    def _init_notes(self) -> Dict[str, pathlib.Path]:
+        notes: Dict[str, pathlib.Path] = {}
+        for path in self._root.iterdir():
+            if path.is_file():
+                notes[path.name] = path
+        return notes
 
     @classmethod
     def create(cls) -> "Repo":
