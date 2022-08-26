@@ -2,8 +2,8 @@ from typing import Tuple
 
 import click
 
-from qn.editor import Editor
 from qn.repo import Repo
+from qn.shell import ShellManager
 from qn.utils import determine_root
 
 
@@ -15,8 +15,8 @@ def cli(ctx: click.Context) -> None:
     designed around speed and ease-of-use.
     """
     root = determine_root()
-    editor = Editor("nvim")
-    repo = Repo(root=root, editor=editor)
+    shell = ShellManager(editor="nvim")
+    repo = Repo(root=root, shell=shell)
     ctx.obj = repo
 
 

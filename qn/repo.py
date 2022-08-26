@@ -1,27 +1,27 @@
 import pathlib
 from typing import List, Tuple
 
-from qn.editor import Editor
+from qn.shell import ShellManager
 
 
 class Repo:
-    def __init__(self, root: pathlib.Path, editor: Editor):
+    def __init__(self, root: pathlib.Path, shell: ShellManager) -> None:
         self._root = root
-        self._editor = editor
+        self._shell = shell
 
     def add_note(self, name: str) -> None:
         path = self._determine_path_from_name(name)
         if path.exists():
             raise ValueError(f"Note '{name}' already exists; please use 'qn open'")
 
-        self._editor.open([path])
+        self._shell.open([path])
 
     def open_notes(self, names: Tuple[str, ...]) -> None:
         if len(names) == 0:
             raise NotImplementedError("FZF integration not yet been implemented")
 
         paths = self._collect_paths_from_names(names)
-        self._editor.open(paths)
+        self._shell.open(paths)
 
     def list_notes(self) -> List[str]:
         notes = [note.name for note in self._root.iterdir() if note.is_file()]

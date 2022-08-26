@@ -3,12 +3,12 @@ import subprocess
 from typing import List
 
 
-class Editor:
-    def __init__(self, cmd: str) -> None:
-        self._cmd = cmd
+class ShellManager:
+    def __init__(self, editor: str) -> None:
+        self._editor = editor
 
     def open(self, paths: List[pathlib.Path]) -> None:
-        command = [self._cmd]
+        command = [self._editor]
         for path in paths:
             str_path = path.as_posix()
             command.append(str_path)
