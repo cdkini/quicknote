@@ -1,5 +1,7 @@
 import click
 
+from qn.repo import Repo
+
 
 @click.group(name="qn")
 @click.pass_context
@@ -7,6 +9,8 @@ def cli(ctx: click.Context) -> None:
     """
     qn (quicknote) is a terminal-based notetaking system designed around speed and ease-of-use.
     """
+    repo = Repo.create()
+    ctx.obj = repo
 
 
 @cli.command("add")
