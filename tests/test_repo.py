@@ -15,7 +15,7 @@ def test_add_note_existing_name_raises_error(tmp_path):
     existing_file = root.joinpath(file_name)
     existing_file.touch()
 
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(FileExistsError) as e:
         repo.add_note(file_name)
 
     assert f"Note '{file_name}' already exists" in str(e.value)
@@ -38,7 +38,7 @@ def test_open_note_nonexistent_name_raises_error(tmp_path):
 
     repo = Repo(root=root, shell=shell)
 
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(FileNotFoundError) as e:
         file_names = ("foo.md",)
         repo.open_notes(file_names)
 
@@ -83,7 +83,7 @@ def test_delete_notes_nonexistent_name_raises_error(tmp_path):
 
     repo = Repo(root=root, shell=shell)
 
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(FileNotFoundError) as e:
         file_names = ("foo.md",)
         repo.delete_notes(file_names)
 

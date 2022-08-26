@@ -66,6 +66,9 @@ class Repo:
             self._shell.user_confirmation(f"Delete '{path.stem}' [y/n]: ")
             path.unlink()
 
+    def grep_through_notes(self, args: Tuple[str, ...]) -> None:
+        self._shell.grep(self._root, args)
+
     def _interactively_retrieve_names(self) -> Tuple[str, ...]:
         notes = self._retrieve_all_note_paths()
         names = self._shell.fzf(self._root, notes)

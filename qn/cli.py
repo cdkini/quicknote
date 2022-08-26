@@ -15,7 +15,7 @@ def cli(ctx: click.Context) -> None:
     designed around speed and ease-of-use.
     """
     root = determine_root()
-    shell = Shell(editor="nvim")
+    shell = Shell()
     repo = Repo(root=root, shell=shell)
     ctx.obj = repo
 
@@ -60,13 +60,16 @@ def ls_cmd(repo: Repo) -> None:
         click.echo(note)
 
 
-@cli.command("grep")
+@cli.command(
+    "grep", context_settings=dict(ignore_unknown_options=True, allow_extra_args=True)
+)
 @click.pass_obj
-def grep_cmd(repo: Repo) -> None:
+@click.argument("args", nargs=-1)
+def grep_cmd(repo: Repo, args: Tuple[str, ...]) -> None:
     """
     grep cmd
     """
-    pass
+    repo.grep_through_notes(args)
 
 
 @cli.command("rm")
