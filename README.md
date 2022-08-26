@@ -3,5 +3,6 @@
 
 ### Requirements
 * fzf
+* bat
 * rg
 * nvim
