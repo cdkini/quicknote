@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import click
 
 from qn.editor import Editor
@@ -27,8 +29,9 @@ def add_cmd(repo: Repo, name: str) -> None:
 
 @cli.command("open")
 @click.pass_obj
-def open_cmd(repo: Repo) -> None:
-    pass
+@click.argument("names", nargs=-1)
+def open_cmd(repo: Repo, names: Tuple[str]) -> None:
+    repo.open_notes(names)
 
 
 @cli.command("grep")
