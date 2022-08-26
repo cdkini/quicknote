@@ -1,5 +1,6 @@
 import click
 
+from qn.editor import Editor
 from qn.repo import Repo
 from qn.utils import determine_root
 
@@ -12,14 +13,16 @@ def cli(ctx: click.Context) -> None:
     designed around speed and ease-of-use.
     """
     root = determine_root()
-    repo = Repo(root=root)
+    editor = Editor("nvim")
+    repo = Repo(root=root, editor=editor)
     ctx.obj = repo
 
 
 @cli.command("add")
 @click.pass_obj
-def add_cmd(repo: Repo) -> None:
-    pass
+@click.argument("name", nargs=1)
+def add_cmd(repo: Repo, name: str) -> None:
+    repo.add_note(name)
 
 
 @cli.command("open")
