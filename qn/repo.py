@@ -10,6 +10,11 @@ class Repo:
         self._shell = shell
 
     def add_note(self, name: str) -> None:
+        """
+
+        Args:
+            name (str):
+        """
         path = self._determine_path_from_name(name)
         if path.exists():
             raise ValueError(f"Note '{name}' already exists; please use 'qn open'")
@@ -17,6 +22,11 @@ class Repo:
         self._shell.open([path])
 
     def open_notes(self, names: Tuple[str, ...]) -> None:
+        """
+
+        Args:
+            names (Tuple[str, ...]):
+        """
         if len(names) == 0:
             names = self._interactively_retrieve_names()
 
@@ -24,10 +34,20 @@ class Repo:
         self._shell.open(paths)
 
     def list_notes(self) -> List[str]:
+        """
+
+        Returns:
+
+        """
         notes = self._retrieve_all_note_paths()
         return sorted(map(lambda n: n.name, notes))
 
     def delete_notes(self, names: Tuple[str, ...]) -> None:
+        """
+
+        Args:
+            names (Tuple[str, ...]):
+        """
         if len(names) == 0:
             names = self._interactively_retrieve_names()
 

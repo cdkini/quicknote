@@ -24,6 +24,9 @@ def cli(ctx: click.Context) -> None:
 @click.pass_obj
 @click.argument("name", nargs=1)
 def add_cmd(repo: Repo, name: str) -> None:
+    """
+    add cmd
+    """
     repo.add_note(name)
 
 
@@ -31,12 +34,18 @@ def add_cmd(repo: Repo, name: str) -> None:
 @click.pass_obj
 @click.argument("names", nargs=-1)
 def open_cmd(repo: Repo, names: Tuple[str]) -> None:
+    """
+    open cmd
+    """
     repo.open_notes(names)
 
 
 @cli.command("ls")
 @click.pass_obj
 def ls_cmd(repo: Repo) -> None:
+    """
+    ls cmd
+    """
     notes = repo.list_notes()
     for note in notes:
         click.echo(note)
@@ -45,6 +54,9 @@ def ls_cmd(repo: Repo) -> None:
 @cli.command("grep")
 @click.pass_obj
 def grep_cmd(repo: Repo) -> None:
+    """
+    grep cmd
+    """
     pass
 
 
@@ -52,6 +64,9 @@ def grep_cmd(repo: Repo) -> None:
 @click.pass_obj
 @click.argument("names", nargs=-1)
 def rm_cmd(repo: Repo, names: Tuple[str]) -> None:
+    """
+    rm cmd
+    """
     repo.delete_notes(names)
 
 
