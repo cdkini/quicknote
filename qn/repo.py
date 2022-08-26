@@ -1,3 +1,4 @@
+import datetime as dt
 import pathlib
 from typing import List, Tuple
 
@@ -17,7 +18,7 @@ class Repo:
         """
         path = self._determine_path_from_name(name)
         if path.exists():
-            raise ValueError(f"Note '{name}' already exists; please use 'qn open'")
+            raise FileExistsError(f"Note '{name}' already exists; please use 'qn open'")
 
         self._shell.open([path])
 
@@ -32,6 +33,15 @@ class Repo:
 
         paths = self._collect_paths_from_names(names)
         self._shell.open(paths)
+
+    def open_daily_note(self) -> None:
+        """ """
+        today = str(dt.date.today())
+
+        try:
+            self.add_note(today)
+        except FileExistsError:
+            self.open_notes((today,))
 
     def list_notes(self) -> List[str]:
         """
@@ -69,7 +79,7 @@ class Repo:
         for name in names:
             path = self._determine_path_from_name(name)
             if not path.exists():
-                raise ValueError(f"Note '{name}' does not exist")
+                raise FileNotFoundError(f"Note '{name}' does not exist")
             paths.append(path)
 
         return paths

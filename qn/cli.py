@@ -40,6 +40,15 @@ def open_cmd(repo: Repo, names: Tuple[str]) -> None:
     repo.open_notes(names)
 
 
+@cli.command("daily")
+@click.pass_obj
+def daily_cmd(repo: Repo) -> None:
+    """
+    daily cmd
+    """
+    repo.open_daily_note()
+
+
 @cli.command("ls")
 @click.pass_obj
 def ls_cmd(repo: Repo) -> None:
