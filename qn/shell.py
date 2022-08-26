@@ -4,6 +4,8 @@ from typing import List, Tuple
 
 import pyfzf
 
+from qn.utils import pushd
+
 
 class Shell:
 
@@ -21,9 +23,12 @@ class Shell:
 
         subprocess.call(command)
 
-    def fzf(self, paths: List[pathlib.Path]) -> Tuple[str, ...]:
-        choices = [path.absolute().as_posix() for path in paths]
-        results = self._fzf.prompt(choices, Shell.FZF_OPTS)
+    def fzf(
+        self, directory: pathlib.Path, paths: List[pathlib.Path]
+    ) -> Tuple[str, ...]:
+        with pushd(directory.as_posix()):
+            choices = sorted(map(lambda p: p.name, paths))
+            results = self._fzf.prompt(choices, Shell.FZF_OPTS)
         return tuple(results)
 
     def user_confirmation(self, prompt: str) -> bool:

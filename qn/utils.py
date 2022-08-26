@@ -1,5 +1,7 @@
+import contextlib
 import os
 import pathlib
+from typing import Generator
 
 
 def determine_root() -> pathlib.Path:
@@ -14,3 +16,14 @@ def determine_root() -> pathlib.Path:
         raise ValueError(f"QN_ROOT '{path}' is not a directory")
 
     return root
+
+
+# https://stackoverflow.com/a/13847807
+@contextlib.contextmanager
+def pushd(new_dir: str) -> Generator:
+    previous_dir = os.getcwd()
+    os.chdir(new_dir)
+    try:
+        yield
+    finally:
+        os.chdir(previous_dir)

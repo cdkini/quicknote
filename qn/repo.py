@@ -38,7 +38,7 @@ class Repo:
 
     def _interactively_retrieve_names(self) -> Tuple[str, ...]:
         notes = self._retrieve_all_note_paths()
-        names = self._shell.fzf(notes)
+        names = self._shell.fzf(self._root, notes)
         return names
 
     def _retrieve_all_note_paths(self) -> List[pathlib.Path]:
