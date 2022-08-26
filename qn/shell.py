@@ -47,6 +47,4 @@ class Shell:
 
     def user_confirmation(self, prompt: str) -> bool:
         answer = input(prompt)
-        if answer.lower() in ("y", "yes"):
-            return True
-        return False
+        return answer.lower() in ("y", "yes")
