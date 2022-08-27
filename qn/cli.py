@@ -33,7 +33,7 @@ def add_note(repo: Repo, name: str) -> None:
 @click.pass_obj
 @click.argument("name", nargs=1)
 def add_tmpl(repo: Repo, name: str) -> None:
-    raise NotImplementedError()
+    repo.add_template(name)
 
 
 @cli.group(name="open")
@@ -53,7 +53,7 @@ def open_note(repo: Repo, names: Tuple[str]) -> None:
 @click.pass_obj
 @click.argument("names", nargs=-1)
 def open_tmpl(repo: Repo, names: Tuple[str]) -> None:
-    raise NotImplementedError()
+    repo.open_templates(names)
 
 
 @cli.group("ls")
@@ -73,7 +73,9 @@ def ls_note(repo: Repo) -> None:
 @ls.command("tmpl")
 @click.pass_obj
 def ls_tmpl(repo: Repo) -> None:
-    raise NotImplementedError()
+    templates = repo.list_templates()
+    for template in templates:
+        click.echo(template)
 
 
 @cli.group("rm")
@@ -93,7 +95,7 @@ def rm_note(repo: Repo, names: Tuple[str]) -> None:
 @click.pass_obj
 @click.argument("names", nargs=-1)
 def rm_tmpl(repo: Repo, names: Tuple[str]) -> None:
-    raise NotImplementedError()
+    repo.delete_templates(names)
 
 
 @cli.command(

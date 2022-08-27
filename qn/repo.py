@@ -27,14 +27,26 @@ class Repo:
     def open_notes(self, names: Tuple[str, ...]) -> None:
         self._notes.open(names)
 
-    def open_daily_note(self) -> None:
-        self._notes.open_daily()
-
     def list_notes(self) -> List[str]:
         return self._notes.list()
 
     def delete_notes(self, names: Tuple[str, ...]) -> None:
         self._notes.delete(names)
 
+    def open_daily_note(self) -> None:
+        self._notes.open_daily()
+
     def grep_notes(self, args: Tuple[str, ...]) -> None:
         self._notes.grep(args)
+
+    def add_template(self, name: str) -> None:
+        self._templates.add(name)
+
+    def open_templates(self, names: Tuple[str, ...]) -> None:
+        self._templates.open(names)
+
+    def list_templates(self) -> List[str]:
+        return self._templates.list()
+
+    def delete_templates(self, names: Tuple[str, ...]) -> None:
+        self._templates.delete(names)
