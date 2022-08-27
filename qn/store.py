@@ -1,5 +1,6 @@
 import datetime as dt
 import pathlib
+import shutil
 from typing import List, Tuple
 
 from qn.shell import Shell
@@ -87,5 +88,10 @@ class TemplateStore(Store):
         self._create_daily_template()
 
     def _create_daily_template(self) -> None:
-        # TODO(cdkini): Need to implement with TemplateEngine
-        pass
+        src = pathlib.Path(__file__).joinpath("templates/daily.md")
+        dst = self._root.joinpath("daily.md")
+        assert src.exists()
+
+        src_path = src.as_posix()
+        dst_path = dst.as_posix()
+        shutil.copy(src_path, dst_path)
