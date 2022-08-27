@@ -16,32 +16,84 @@ def cli(ctx: click.Context) -> None:
     ctx.obj = repo
 
 
-@cli.command("add")
+@cli.group(name="add")
+@click.pass_context
+def add(ctx: click.Context):
+    pass
+
+
+@add.command("note")
 @click.pass_obj
 @click.argument("name", nargs=1)
-def add_cmd(repo: Repo, name: str) -> None:
+def add_note(repo: Repo, name: str) -> None:
     repo.add_note(name)
 
 
-@cli.command("open")
+@add.command("tmpl")
+@click.pass_obj
+@click.argument("name", nargs=1)
+def add_tmpl(repo: Repo, name: str) -> None:
+    raise NotImplementedError()
+
+
+@cli.group(name="open")
+@click.pass_context
+def open(ctx: click.Context):
+    pass
+
+
+@open.command("note")
 @click.pass_obj
 @click.argument("names", nargs=-1)
-def open_cmd(repo: Repo, names: Tuple[str]) -> None:
+def open_note(repo: Repo, names: Tuple[str]) -> None:
     repo.open_notes(names)
 
 
-@cli.command("daily")
+@open.command("tmpl")
 @click.pass_obj
-def daily_cmd(repo: Repo) -> None:
-    repo.open_daily_note()
+@click.argument("names", nargs=-1)
+def open_tmpl(repo: Repo, names: Tuple[str]) -> None:
+    raise NotImplementedError()
 
 
-@cli.command("ls")
+@cli.group("ls")
 @click.pass_obj
-def ls_cmd(repo: Repo) -> None:
+def ls(ctx: click.Context) -> None:
+    pass
+
+
+@ls.command("note")
+@click.pass_obj
+def ls_note(repo: Repo) -> None:
     notes = repo.list_notes()
     for note in notes:
         click.echo(note)
+
+
+@ls.command("tmpl")
+@click.pass_obj
+def ls_tmpl(repo: Repo) -> None:
+    raise NotImplementedError()
+
+
+@cli.group("rm")
+@click.pass_obj
+def rm(ctx: click.Context) -> None:
+    pass
+
+
+@rm.command("note")
+@click.pass_obj
+@click.argument("names", nargs=-1)
+def rm_note(repo: Repo, names: Tuple[str]) -> None:
+    repo.delete_notes(names)
+
+
+@rm.command("tmpl")
+@click.pass_obj
+@click.argument("names", nargs=-1)
+def rm_tmpl(repo: Repo, names: Tuple[str]) -> None:
+    raise NotImplementedError()
 
 
 @cli.command(
@@ -53,11 +105,10 @@ def grep_cmd(repo: Repo, args: Tuple[str, ...]) -> None:
     repo.grep_notes(args)
 
 
-@cli.command("rm")
+@cli.command("daily")
 @click.pass_obj
-@click.argument("names", nargs=-1)
-def rm_cmd(repo: Repo, names: Tuple[str]) -> None:
-    repo.delete_notes(names)
+def daily_note(repo: Repo) -> None:
+    repo.open_daily_note()
 
 
 if __name__ == "__main__":

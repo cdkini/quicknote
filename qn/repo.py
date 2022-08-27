@@ -13,7 +13,7 @@ class Repo:
     @classmethod
     def create(cls) -> "Repo":
         root = determine_root()
-        templates_root = root.joinpath("templates")
+        templates_root = root.joinpath(".templates")
         shell = Shell()
 
         notes = NoteStore(root=root, shell=shell)
