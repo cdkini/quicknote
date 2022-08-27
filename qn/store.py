@@ -78,6 +78,14 @@ class NoteStore(Store):
 
 class TemplateStore(Store):
     def __init__(self, root: pathlib.Path, shell: Shell) -> None:
-        if not root.exists():
-            root.mkdir()
         super().__init__(root=root, shell=shell)
+        if not root.exists():
+            self.scaffold()
+
+    def scaffold(self) -> None:
+        self._root.mkdir()
+        self._create_daily_template()
+
+    def _create_daily_template(self) -> None:
+        # TODO(cdkini): Need to implement with TemplateEngine
+        pass
