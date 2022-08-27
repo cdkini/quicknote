@@ -3,9 +3,6 @@ from typing import Tuple
 import click
 
 from qn.repo import Repo
-from qn.shell import Shell
-from qn.store import NoteStore
-from qn.utils import determine_root
 
 
 @click.group(name="qn")
@@ -15,10 +12,7 @@ def cli(ctx: click.Context) -> None:
     qn (quicknote) is a terminal-based notetaking system
     designed around speed and ease-of-use.
     """
-    root = determine_root()
-    shell = Shell()
-    notes = NoteStore(root=root, shell=shell)
-    repo = Repo(notes=notes)
+    repo = Repo.create()
     ctx.obj = repo
 
 

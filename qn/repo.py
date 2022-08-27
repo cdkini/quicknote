@@ -1,26 +1,40 @@
 from typing import List, Tuple
 
-from qn.store import NoteStore
+from qn.shell import Shell
+from qn.store import NoteStore, TemplateStore
+from qn.utils import determine_root
 
 
 class Repo:
-    def __init__(self, notes: NoteStore) -> None:
-        self._note_store = notes
+    def __init__(self, notes: NoteStore, templates: TemplateStore) -> None:
+        self._notes = notes
+        self._templates = templates
+
+    @classmethod
+    def create(cls) -> "Repo":
+        root = determine_root()
+        templates_root = root.joinpath("templates")
+        shell = Shell()
+
+        notes = NoteStore(root=root, shell=shell)
+        templates = TemplateStore(root=templates_root, shell=shell)
+
+        return cls(notes=notes, templates=templates)
 
     def add_note(self, name: str) -> None:
-        self._note_store.add(name)
+        self._notes.add(name)
 
     def open_notes(self, names: Tuple[str, ...]) -> None:
-        self._note_store.open(names)
+        self._notes.open(names)
 
     def open_daily_note(self) -> None:
-        self._note_store.open_daily()
+        self._notes.open_daily()
 
     def list_notes(self) -> List[str]:
-        return self._note_store.list()
+        return self._notes.list()
 
     def delete_notes(self, names: Tuple[str, ...]) -> None:
-        self._note_store.delete(names)
+        self._notes.delete(names)
 
     def grep_notes(self, args: Tuple[str, ...]) -> None:
-        self._note_store.grep(args)
+        self._notes.grep(args)

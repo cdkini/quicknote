@@ -74,3 +74,10 @@ class NoteStore(Store):
             self.add(today)
         except FileExistsError:
             self.open((today,))
+
+
+class TemplateStore(Store):
+    def __init__(self, root: pathlib.Path, shell: Shell) -> None:
+        if not root.exists():
+            root.mkdir()
+        super().__init__(root=root, shell=shell)
