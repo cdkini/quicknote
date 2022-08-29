@@ -17,11 +17,6 @@ class Shell:
         self._fzf = pyfzf.pyfzf.FzfPrompt()
 
     def open(self, paths: List[pathlib.Path]) -> None:
-        """
-
-        Args:
-            paths (List[pathlib.Path]):
-        """
         command = [self._editor]
         for path in paths:
             str_path = path.as_posix()
@@ -42,28 +37,11 @@ class Shell:
     def fzf(
         self, directory: pathlib.Path, paths: List[pathlib.Path]
     ) -> Tuple[str, ...]:
-        """
-
-        Args:
-            directory (pathlib.Path):
-            paths (List[pathlib.Path]):
-
-        Returns:
-
-        """
         with pushd(directory.as_posix()):
             choices = sorted(map(lambda p: p.name, paths))
             results = self._fzf.prompt(choices, Shell.FZF_OPTS)
         return tuple(results)
 
     def user_confirmation(self, prompt: str) -> bool:
-        """
-
-        Args:
-            prompt (str):
-
-        Returns:
-
-        """
         answer = input(prompt)
         return answer.lower() in ("y", "yes")

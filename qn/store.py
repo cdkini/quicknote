@@ -1,9 +1,10 @@
 import datetime as dt
 import pathlib
 import shutil
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from qn.shell import Shell
+from qn.template import TemplateEngine
 
 
 class Store:
@@ -11,10 +12,15 @@ class Store:
         self._root = root
         self._shell = shell
 
-    def add(self, name: str) -> None:
+    def add(self, name: str, text: Optional[str] = None) -> None:
         path = self._determine_path_from_name(name)
         if path.exists():
             raise FileExistsError(f"'{name}' already exists")
+
+        if text is not None:
+            with path.open("w") as f:
+                f.write(text)
+                f.seek(0)
 
         self._shell.open([path])
 
@@ -78,14 +84,30 @@ class NoteStore(Store):
 
 
 class TemplateStore(Store):
-    def __init__(self, root: pathlib.Path, shell: Shell) -> None:
+    def __init__(
+        self, root: pathlib.Path, shell: Shell, engine: TemplateEngine
+    ) -> None:
         super().__init__(root=root, shell=shell)
+        self._engine = engine
         if not root.exists():
             self.scaffold()
 
     def scaffold(self) -> None:
         self._root.mkdir()
         self._create_daily_template()
+
+    def evaluate_template(self, name: str) -> str:
+        if not name.endswith(".md"):
+            name += ".md"
+
+        path = self._root.joinpath(name)
+        if not path.exists():
+            raise FileNotFoundError()
+
+        with path.open() as f:
+            contents = f.read()
+
+        return self._engine.eval(contents)
 
     def _create_daily_template(self) -> None:
         src = pathlib.Path(__file__).joinpath("templates/daily.md")

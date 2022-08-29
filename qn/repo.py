@@ -1,7 +1,8 @@
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from qn.shell import Shell
 from qn.store import NoteStore, TemplateStore
+from qn.template import TemplateEngine
 from qn.utils import determine_root
 
 
@@ -17,12 +18,21 @@ class Repo:
         shell = Shell()
 
         notes = NoteStore(root=root, shell=shell)
-        templates = TemplateStore(root=templates_root, shell=shell)
+
+        import datetime
+
+        modules = {"datetime": datetime}
+        engine = TemplateEngine(modules=modules)
+        templates = TemplateStore(root=templates_root, shell=shell, engine=engine)
 
         return cls(notes=notes, templates=templates)
 
-    def add_note(self, name: str) -> None:
-        self._notes.add(name)
+    def add_note(self, name: str, template: Optional[str]) -> None:
+        initial_contents: Optional[str] = None
+        if template is not None:
+            initial_contents = self._templates.evaluate_template(template)
+
+        self._notes.add(name, initial_contents)
 
     def open_notes(self, names: Tuple[str, ...]) -> None:
         self._notes.open(names)

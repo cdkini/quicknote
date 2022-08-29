@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Optional, Tuple
 
 import click
 
@@ -25,8 +25,9 @@ def note(ctx: click.Context):
 @note.command("add")
 @click.pass_obj
 @click.argument("name", nargs=1)
-def add_note(repo: Repo, name: str) -> None:
-    repo.add_note(name)
+@click.option("--template", "-t", default=None)
+def add_note(repo: Repo, name: str, template: Optional[str]) -> None:
+    repo.add_note(name, template)
 
 
 @note.command("open")
