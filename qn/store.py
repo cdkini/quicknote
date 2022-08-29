@@ -74,11 +74,11 @@ class Store:
 
 
 class NoteStore(Store):
-    def open_daily(self) -> None:
+    def open_daily(self, text: str) -> None:
         today = str(dt.date.today())
 
         try:
-            self.add(today)
+            self.add(today, text)
         except FileExistsError:
             self.open((today,))
 

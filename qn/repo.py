@@ -44,7 +44,9 @@ class Repo:
         self._notes.delete(names)
 
     def open_daily_note(self) -> None:
-        self._notes.open_daily()
+        template = "daily"
+        initial_contents = self._templates.evaluate_template(template)
+        self._notes.open_daily(initial_contents)
 
     def grep_notes(self, args: Tuple[str, ...]) -> None:
         self._notes.grep(args)
