@@ -16,53 +16,27 @@ def cli(ctx: click.Context) -> None:
     ctx.obj = repo
 
 
-@cli.group(name="add")
+@cli.group(name="note")
 @click.pass_context
-def add(ctx: click.Context):
+def note(ctx: click.Context):
     pass
 
 
-@add.command("note")
+@note.command("add")
 @click.pass_obj
 @click.argument("name", nargs=1)
 def add_note(repo: Repo, name: str) -> None:
     repo.add_note(name)
 
 
-@add.command("tmpl")
-@click.pass_obj
-@click.argument("name", nargs=1)
-def add_tmpl(repo: Repo, name: str) -> None:
-    repo.add_template(name)
-
-
-@cli.group(name="open")
-@click.pass_context
-def open(ctx: click.Context):
-    pass
-
-
-@open.command("note")
+@note.command("open")
 @click.pass_obj
 @click.argument("names", nargs=-1)
 def open_note(repo: Repo, names: Tuple[str]) -> None:
     repo.open_notes(names)
 
 
-@open.command("tmpl")
-@click.pass_obj
-@click.argument("names", nargs=-1)
-def open_tmpl(repo: Repo, names: Tuple[str]) -> None:
-    repo.open_templates(names)
-
-
-@cli.group("ls")
-@click.pass_obj
-def ls(ctx: click.Context) -> None:
-    pass
-
-
-@ls.command("note")
+@note.command("ls")
 @click.pass_obj
 def ls_note(repo: Repo) -> None:
     notes = repo.list_notes()
@@ -70,7 +44,40 @@ def ls_note(repo: Repo) -> None:
         click.echo(note)
 
 
-@ls.command("tmpl")
+@note.command("rm")
+@click.pass_obj
+@click.argument("names", nargs=-1)
+def rm_note(repo: Repo, names: Tuple[str]) -> None:
+    repo.delete_notes(names)
+
+
+@note.command("daily")
+@click.pass_obj
+def daily_note(repo: Repo) -> None:
+    repo.open_daily_note()
+
+
+@cli.group(name="tmpl")
+@click.pass_context
+def tmpl(ctx: click.Context):
+    pass
+
+
+@tmpl.command("add")
+@click.pass_obj
+@click.argument("name", nargs=1)
+def add_tmpl(repo: Repo, name: str) -> None:
+    repo.add_template(name)
+
+
+@tmpl.command("open")
+@click.pass_obj
+@click.argument("names", nargs=-1)
+def open_tmpl(repo: Repo, names: Tuple[str]) -> None:
+    repo.open_templates(names)
+
+
+@tmpl.command("ls")
 @click.pass_obj
 def ls_tmpl(repo: Repo) -> None:
     templates = repo.list_templates()
@@ -78,20 +85,7 @@ def ls_tmpl(repo: Repo) -> None:
         click.echo(template)
 
 
-@cli.group("rm")
-@click.pass_obj
-def rm(ctx: click.Context) -> None:
-    pass
-
-
-@rm.command("note")
-@click.pass_obj
-@click.argument("names", nargs=-1)
-def rm_note(repo: Repo, names: Tuple[str]) -> None:
-    repo.delete_notes(names)
-
-
-@rm.command("tmpl")
+@tmpl.command("rm")
 @click.pass_obj
 @click.argument("names", nargs=-1)
 def rm_tmpl(repo: Repo, names: Tuple[str]) -> None:
@@ -105,12 +99,6 @@ def rm_tmpl(repo: Repo, names: Tuple[str]) -> None:
 @click.argument("args", nargs=-1)
 def grep_cmd(repo: Repo, args: Tuple[str, ...]) -> None:
     repo.grep_notes(args)
-
-
-@cli.command("daily")
-@click.pass_obj
-def daily_note(repo: Repo) -> None:
-    repo.open_daily_note()
 
 
 if __name__ == "__main__":
