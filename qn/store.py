@@ -60,7 +60,12 @@ class NoteStore:
         return names
 
     def _retrieve_paths_in_root(self) -> List[pathlib.Path]:
-        return list(filter(lambda n: n.is_file(), self._root.iterdir()))
+        return list(
+            filter(
+                lambda n: n.is_file() and not n.stem.startswith("."),
+                self._root.iterdir(),
+            )
+        )
 
     def _determine_paths_from_names(self, names: Tuple[str, ...]) -> List[pathlib.Path]:
         paths = []
