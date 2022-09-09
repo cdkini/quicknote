@@ -26,6 +26,9 @@ class Repo:
     def open_notes(self, names: Tuple[str, ...]) -> None:
         self._notes.open(names)
 
+    def put_note(self, name: str) -> None:
+        self._notes.put(name)
+
     def list_notes(self) -> List[str]:
         return self._notes.list()
 

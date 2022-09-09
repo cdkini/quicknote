@@ -35,6 +35,10 @@ class NoteStore:
         paths = self._determine_paths_from_names(names)
         self._shell.open(paths)
 
+    def put(self, name: str) -> None:
+        path = self._determine_path_from_name(name)
+        self._shell.open([path])
+
     def list(self) -> List[str]:
         return sorted(self._notes.keys())
 

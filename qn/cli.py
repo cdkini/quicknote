@@ -37,6 +37,16 @@ def open_cmd(repo: Repo, names: Tuple[str]) -> None:
     repo.open_notes(names)
 
 
+@cli.command("put")
+@click.pass_obj
+@click.argument("name", nargs=1)
+def put_cmd(repo: Repo, name: str) -> None:
+    """
+    Open a note if it exists else create a new one.
+    """
+    repo.put_note(name)
+
+
 @cli.command("ls")
 @click.pass_obj
 def ls_cmd(repo: Repo) -> None:
