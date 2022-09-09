@@ -4,6 +4,7 @@ import pathlib
 from typing import Dict, List, Optional, Tuple
 
 from qn.shell import Shell
+from qn.utils import user_choice, user_confirmation
 
 
 class NoteStore:
@@ -58,9 +59,7 @@ class NoteStore:
 
         paths = self._determine_paths_from_names(names)
         for path in paths:
-            confirmation = self._shell.user_confirmation(
-                f"Delete '{path.stem}' [y/n]: "
-            )
+            confirmation = user_confirmation(f"Delete '{path.stem}' [y/n]: ")
             if confirmation:
                 path.unlink()
 
@@ -108,6 +107,8 @@ class NoteStore:
     def _find_closest_name(self, name: str) -> Optional[str]:
         names = list(self._notes.keys())
         matches = difflib.get_close_matches(name, names)
-        if not matches:
+        if len(matches) == 0:
             return None
-        return matches[0]
+        if len(matches) == 1:
+            return matches[0]
+        return user_choice(matches)

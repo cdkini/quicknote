@@ -43,10 +43,6 @@ class Shell:
             results = self._fzf.prompt(choices, Shell.FZF_OPTS)
         return tuple(results)
 
-    def user_confirmation(self, prompt: str) -> bool:
-        answer = input(prompt)
-        return answer.lower() in ("y", "yes")
-
     def git_add(self, directory: pathlib.Path) -> None:
         with pushd(directory.as_posix()):
             subprocess.call(["git", "add", "."])
