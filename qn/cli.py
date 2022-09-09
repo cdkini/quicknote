@@ -73,7 +73,7 @@ def daily_note(repo: Repo) -> None:
 @click.argument("args", nargs=-1)
 def grep_cmd(repo: Repo, args: Tuple[str, ...]) -> None:
     """
-    Use ripgrep through parse through notes and templates.
+    Use ripgrep through parse through notes.
     """
     repo.grep_notes(args)
 
