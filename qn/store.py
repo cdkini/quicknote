@@ -1,6 +1,7 @@
 import datetime as dt
+import difflib
 import pathlib
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from qn.shell import Shell
 
@@ -77,10 +78,11 @@ class NoteStore:
 
     def _determine_paths_from_names(self, names: Tuple[str, ...]) -> List[pathlib.Path]:
         paths = []
+
         for name in names:
             path = self._determine_path_from_name(name)
             if not path.exists():
-                raise FileNotFoundError(f"'{name}' does not exist")
+                path = self._determine_closest_path_from_name(name)
             paths.append(path)
 
         return paths
@@ -91,3 +93,17 @@ class NoteStore:
 
         path = self._root.joinpath(name)
         return path
+
+    def _determine_closest_path_from_name(self, name: str) -> pathlib.Path:
+        closest_name = self._find_closest_name(name)
+        if closest_name is None:
+            raise FileNotFoundError(f"'{name}' does not exist")
+        return self._determine_path_from_name(closest_name)
+
+    def _find_closest_name(self, name: str) -> Optional[str]:
+        paths = self._retrieve_paths_in_root()
+        names = sorted(map(lambda p: p.stem, paths))
+        matches = difflib.get_close_matches(name, names)
+        if not matches:
+            return None
+        return matches[0]
