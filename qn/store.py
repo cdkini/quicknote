@@ -3,7 +3,7 @@ import pathlib
 from typing import Dict, List, Optional, Tuple
 
 from qn.shell import Shell
-from qn.utils import user_choice, user_confirmation
+from qn.utils import Sorter, user_choice, user_confirmation
 
 
 class NoteStore:
@@ -39,8 +39,16 @@ class NoteStore:
         path = self._determine_path_from_name(name)
         self._shell.open([path])
 
-    def list(self) -> List[str]:
-        return sorted(self._notes.keys())
+    def list(self, sorter: Sorter, reverse: bool) -> List[str]:
+        if sorter is Sorter.NAME:
+            return sorted(self._notes.keys(), reverse=reverse)
+        elif sorter is Sorter.CREATED:
+            return sorted(self._notes, key=lambda n: self._notes[n].stat().st_birthtime)
+        elif sorter is Sorter.MODIFIED:
+            return sorted(self._notes, key=lambda n: self._notes[n].stat().st_mtime)
+        elif sorter is Sorter.ACCESSED:
+            return sorted(self._notes, key=lambda n: self._notes[n].stat().st_atime)
+        raise ValueError()
 
     def delete(self, names: Tuple[str, ...]) -> None:
         if len(names) == 0:

@@ -1,7 +1,15 @@
 import contextlib
 import os
 import pathlib
+from enum import Enum
 from typing import Generator, List
+
+
+class Sorter(str, Enum):
+    NAME = "name"
+    CREATED = "created"
+    ACCESSED = "accessed"
+    MODIFIED = "modified"
 
 
 def determine_root() -> pathlib.Path:

@@ -3,6 +3,7 @@ from typing import Tuple
 import click
 
 from qn.repo import Repo
+from qn.utils import Sorter
 
 
 @click.group(name="qn")
@@ -48,12 +49,14 @@ def put_cmd(repo: Repo, name: str) -> None:
 
 
 @cli.command("ls")
+@click.option("-s", "--sort", "sorter", type=click.Choice(Sorter), default=Sorter.NAME)
+@click.option("-r", "--reverse", "reverse", is_flag=True, default=False)
 @click.pass_obj
-def ls_cmd(repo: Repo) -> None:
+def ls_cmd(repo: Repo, sorter: Sorter, reverse: bool) -> None:
     """
     List notes.
     """
-    notes = repo.list_notes()
+    notes = repo.list_notes(sorter=sorter, reverse=reverse)
     for note in notes:
         click.echo(note)
 

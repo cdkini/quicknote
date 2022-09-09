@@ -3,7 +3,7 @@ from typing import List, Tuple
 from qn.log import CommandLogger
 from qn.shell import Shell
 from qn.store import NoteStore
-from qn.utils import determine_root
+from qn.utils import Sorter, determine_root
 
 
 class Repo:
@@ -29,8 +29,8 @@ class Repo:
     def put_note(self, name: str) -> None:
         self._notes.put(name)
 
-    def list_notes(self) -> List[str]:
-        return self._notes.list()
+    def list_notes(self, sorter: Sorter, reverse: bool) -> List[str]:
+        return self._notes.list(sorter=sorter, reverse=reverse)
 
     def delete_notes(self, names: Tuple[str, ...]) -> None:
         self._notes.delete(names)
