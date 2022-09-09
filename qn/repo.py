@@ -41,8 +41,8 @@ class Repo:
     def grep_notes(self, args: Tuple[str, ...]) -> None:
         self._notes.grep(args)
 
-    def log_command(self, args: List[str]) -> None:
-        self._logger.log(args)
+    def log_command(self) -> None:
+        self._logger.log()
 
     def sync_notes(self) -> None:
         self._notes.sync()

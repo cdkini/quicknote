@@ -1,4 +1,3 @@
-import sys
 from typing import Tuple
 
 import click
@@ -14,10 +13,8 @@ def cli(ctx: click.Context) -> None:
     designed around speed and ease-of-use.
     """
     repo = Repo.create()
-    args = sys.argv[1:]
-    repo.log_command(args)
-
     ctx.obj = repo
+    ctx.call_on_close(repo.log_command)
 
 
 @cli.command("add")

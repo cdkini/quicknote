@@ -1,13 +1,14 @@
 import datetime as dt
 import pathlib
-from typing import List
+import sys
 
 
 class CommandLogger:
     def __init__(self, root: pathlib.Path) -> None:
         self._root = root
 
-    def log(self, args: List[str]) -> None:
+    def log(self) -> None:
+        args = sys.argv[1:]
         time = dt.datetime.now().isoformat()
 
         for i, arg in enumerate(args):
