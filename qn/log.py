@@ -9,6 +9,11 @@ class CommandLogger:
 
     def log(self, args: List[str]) -> None:
         time = dt.datetime.now().isoformat()
+
+        for i, arg in enumerate(args):
+            if len(arg.split(" ")) > 1:
+                args[i] = f'"{arg}"'
+
         command = " ".join(arg for arg in args)
         entry = f"{time} - {command}\n"
 
