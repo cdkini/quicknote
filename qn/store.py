@@ -1,7 +1,7 @@
 import datetime as dt
 import difflib
 import pathlib
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from qn.shell import Shell
 
@@ -10,12 +10,22 @@ class NoteStore:
     def __init__(self, root: pathlib.Path, shell: Shell) -> None:
         self._root = root
         self._shell = shell
+        self._notes = self._init_notes()
+
+    def _init_notes(self) -> Dict[str, pathlib.Path]:
+        paths = list(
+            filter(
+                lambda n: n.is_file() and not n.stem.startswith("."),
+                self._root.iterdir(),
+            )
+        )
+        return {path.stem: path for path in paths}
 
     def add(self, name: str) -> None:
-        path = self._determine_path_from_name(name)
-        if path.exists():
+        if name in self._notes:
             raise FileExistsError(f"'{name}' already exists")
 
+        path = self._determine_path_from_name(name)
         self._shell.open([path])
 
     def open(self, names: Tuple[str, ...]) -> None:
@@ -34,14 +44,13 @@ class NoteStore:
             self.open((today,))
 
     def open_last_edited(self) -> None:
-        paths = self._retrieve_paths_in_root()
+        paths = tuple(self._notes.values())
         last_edited = max(paths, key=lambda p: p.stat().st_mtime)
         name = last_edited.stem
         self.open((name,))
 
     def list(self) -> List[str]:
-        paths = self._retrieve_paths_in_root()
-        return sorted(map(lambda p: p.name, paths))
+        return sorted(self._notes.keys())
 
     def delete(self, names: Tuple[str, ...]) -> None:
         if len(names) == 0:
@@ -49,8 +58,11 @@ class NoteStore:
 
         paths = self._determine_paths_from_names(names)
         for path in paths:
-            self._shell.user_confirmation(f"Delete '{path.stem}' [y/n]: ")
-            path.unlink()
+            confirmation = self._shell.user_confirmation(
+                f"Delete '{path.stem}' [y/n]: "
+            )
+            if confirmation:
+                path.unlink()
 
     def grep(self, args: Tuple[str, ...]) -> None:
         self._shell.grep(self._root, args)
@@ -64,17 +76,9 @@ class NoteStore:
         self._shell.git_status(self._root)
 
     def _interactively_retrieve_names(self) -> Tuple[str, ...]:
-        paths = self._retrieve_paths_in_root()
+        paths = list(self._notes.values())
         names = self._shell.fzf(self._root, paths)
         return names
-
-    def _retrieve_paths_in_root(self) -> List[pathlib.Path]:
-        return list(
-            filter(
-                lambda n: n.is_file() and not n.stem.startswith("."),
-                self._root.iterdir(),
-            )
-        )
 
     def _determine_paths_from_names(self, names: Tuple[str, ...]) -> List[pathlib.Path]:
         paths = []
@@ -98,11 +102,11 @@ class NoteStore:
         closest_name = self._find_closest_name(name)
         if closest_name is None:
             raise FileNotFoundError(f"'{name}' does not exist")
+
         return self._determine_path_from_name(closest_name)
 
     def _find_closest_name(self, name: str) -> Optional[str]:
-        paths = self._retrieve_paths_in_root()
-        names = sorted(map(lambda p: p.stem, paths))
+        names = list(self._notes.keys())
         matches = difflib.get_close_matches(name, names)
         if not matches:
             return None
