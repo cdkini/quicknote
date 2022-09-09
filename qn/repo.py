@@ -32,12 +32,6 @@ class Repo:
     def delete_notes(self, names: Tuple[str, ...]) -> None:
         self._notes.delete(names)
 
-    def open_daily_note(self) -> None:
-        self._notes.open_daily()
-
-    def open_last_edited_note(self) -> None:
-        self._notes.open_last_edited()
-
     def grep_notes(self, args: Tuple[str, ...]) -> None:
         self._notes.grep(args)
 

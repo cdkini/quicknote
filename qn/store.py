@@ -1,4 +1,3 @@
-import datetime as dt
 import difflib
 import pathlib
 from typing import Dict, List, Optional, Tuple
@@ -35,20 +34,6 @@ class NoteStore:
 
         paths = self._determine_paths_from_names(names)
         self._shell.open(paths)
-
-    def open_daily(self) -> None:
-        today = str(dt.date.today())
-
-        try:
-            self.add(today)
-        except FileExistsError:
-            self.open((today,))
-
-    def open_last_edited(self) -> None:
-        paths = tuple(self._notes.values())
-        last_edited = max(paths, key=lambda p: p.stat().st_mtime)
-        name = last_edited.stem
-        self.open((name,))
 
     def list(self) -> List[str]:
         return sorted(self._notes.keys())

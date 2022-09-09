@@ -58,24 +58,6 @@ def rm_cmd(repo: Repo, names: Tuple[str]) -> None:
     repo.delete_notes(names)
 
 
-@cli.command("daily")
-@click.pass_obj
-def daily_cmd(repo: Repo) -> None:
-    """
-    Open daily note.
-    """
-    repo.open_daily_note()
-
-
-@cli.command("last")
-@click.pass_obj
-def last_cmd(repo: Repo) -> None:
-    """
-    Open last edited note.
-    """
-    repo.open_last_edited_note()
-
-
 @cli.command(
     "grep", context_settings=dict(ignore_unknown_options=True, allow_extra_args=True)
 )
