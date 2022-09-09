@@ -34,4 +34,7 @@ Commands:
 ```
 # Create a daily note
 qn put $(date +%Y-%m-%d)
+
+# Open the last accessed note
+qn open "$(qn ls -s accessed -r | head -n 1)"
 ```
