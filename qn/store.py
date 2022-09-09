@@ -1,6 +1,6 @@
 import difflib
 import pathlib
-from typing import Dict, List, Optional, Tuple
+from typing import Callable, Dict, List, Optional, Tuple
 
 from qn.shell import Shell
 from qn.utils import Sorter, user_choice, user_confirmation
@@ -42,13 +42,17 @@ class NoteStore:
     def list(self, sorter: Sorter, reverse: bool) -> List[str]:
         if sorter is Sorter.NAME:
             return sorted(self._notes.keys(), reverse=reverse)
-        elif sorter is Sorter.CREATED:
-            return sorted(self._notes, key=lambda n: self._notes[n].stat().st_birthtime)
+
+        key_fn: Optional[Callable] = None
+        if sorter is Sorter.CREATED:
+            key_fn = lambda n: self._notes[n].stat().st_birthtime  # noqa: E731
         elif sorter is Sorter.MODIFIED:
-            return sorted(self._notes, key=lambda n: self._notes[n].stat().st_mtime)
+            key_fn = lambda n: self._notes[n].stat().st_mtime  # noqa: E731
         elif sorter is Sorter.ACCESSED:
-            return sorted(self._notes, key=lambda n: self._notes[n].stat().st_atime)
-        raise ValueError()
+            key_fn = lambda n: self._notes[n].stat().st_atime  # noqa: E731
+
+        assert key_fn is not None
+        return sorted(self._notes, key=key_fn, reverse=reverse)
 
     def delete(self, names: Tuple[str, ...]) -> None:
         if len(names) == 0:
