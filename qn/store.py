@@ -32,6 +32,12 @@ class NoteStore:
         except FileExistsError:
             self.open((today,))
 
+    def open_last_edited(self) -> None:
+        paths = self._retrieve_paths_in_root()
+        last_edited = max(paths, key=lambda p: p.stat().st_mtime)
+        name = last_edited.stem
+        self.open((name,))
+
     def list(self) -> List[str]:
         paths = self._retrieve_paths_in_root()
         return sorted(map(lambda p: p.name, paths))
