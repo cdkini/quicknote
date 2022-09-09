@@ -2,14 +2,14 @@ from unittest import mock
 
 import pytest
 
-from qn.store import Store
+from qn.store import NoteStore
 
 
 def test_add_existing_name_raises_error(tmp_path):
     root = tmp_path
     shell = mock.MagicMock()
 
-    store = Store(root=root, shell=shell)
+    store = NoteStore(root=root, shell=shell)
 
     file_name = "foo.md"
     existing_file = root.joinpath(file_name)
@@ -25,7 +25,7 @@ def test_add_invokes_shell(tmp_path):
     root = tmp_path
     shell = mock.MagicMock()
 
-    store = Store(root=root, shell=shell)
+    store = NoteStore(root=root, shell=shell)
 
     store.add("foo.md")
 
@@ -36,7 +36,7 @@ def test_open_nonexistent_name_raises_error(tmp_path):
     root = tmp_path
     shell = mock.MagicMock()
 
-    store = Store(root=root, shell=shell)
+    store = NoteStore(root=root, shell=shell)
 
     with pytest.raises(FileNotFoundError) as e:
         file_names = ("foo.md",)
@@ -49,7 +49,7 @@ def test_open_invokes_shell(tmp_path):
     root = tmp_path
     shell = mock.MagicMock()
 
-    store = Store(root=root, shell=shell)
+    store = NoteStore(root=root, shell=shell)
 
     file_names = ("foo.md", "bar.md")
     for file_name in file_names:
@@ -65,7 +65,7 @@ def test_list(tmp_path):
     root = tmp_path
     shell = mock.MagicMock()
 
-    store = Store(root=root, shell=shell)
+    store = NoteStore(root=root, shell=shell)
 
     file_names = ["foo.md", "bar.md", "baz.md"]
     for file_name in file_names:
@@ -81,7 +81,7 @@ def test_delete_nonexistent_name_raises_error(tmp_path):
     root = tmp_path
     shell = mock.MagicMock()
 
-    store = Store(root=root, shell=shell)
+    store = NoteStore(root=root, shell=shell)
 
     with pytest.raises(FileNotFoundError) as e:
         file_names = ("foo.md",)
@@ -94,7 +94,7 @@ def test_delete_invokes_shell(tmp_path):
     root = tmp_path
     shell = mock.MagicMock()
 
-    store = Store(root=root, shell=shell)
+    store = NoteStore(root=root, shell=shell)
 
     file_names = ("foo.md", "bar.md", "baz.md")
     paths = []
