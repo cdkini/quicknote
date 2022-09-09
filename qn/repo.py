@@ -1,13 +1,15 @@
 from typing import List, Tuple
 
+from qn.log import CommandLogger
 from qn.shell import Shell
 from qn.store import NoteStore
 from qn.utils import determine_root
 
 
 class Repo:
-    def __init__(self, notes: NoteStore) -> None:
+    def __init__(self, notes: NoteStore, logger: CommandLogger) -> None:
         self._notes = notes
+        self._logger = logger
 
     @classmethod
     def create(cls) -> "Repo":
@@ -15,7 +17,8 @@ class Repo:
         shell = Shell()
 
         notes = NoteStore(root=root, shell=shell)
-        return cls(notes=notes)
+        logger = CommandLogger(root=root)
+        return cls(notes=notes, logger=logger)
 
     def add_note(self, name: str) -> None:
         self._notes.add(name)
@@ -37,3 +40,6 @@ class Repo:
 
     def grep_notes(self, args: Tuple[str, ...]) -> None:
         self._notes.grep(args)
+
+    def log_command(self, args: List[str]) -> None:
+        self._logger.log(args)
