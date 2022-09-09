@@ -43,3 +43,9 @@ class Repo:
 
     def log_command(self, args: List[str]) -> None:
         self._logger.log(args)
+
+    def sync_notes(self) -> None:
+        self._notes.sync()
+
+    def status(self) -> None:
+        self._notes.status()

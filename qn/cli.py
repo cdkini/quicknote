@@ -23,7 +23,7 @@ def cli(ctx: click.Context) -> None:
 @cli.command("add")
 @click.pass_obj
 @click.argument("name", nargs=1)
-def add_note(repo: Repo, name: str) -> None:
+def add_cmd(repo: Repo, name: str) -> None:
     """
     Create a new note.
     """
@@ -33,7 +33,7 @@ def add_note(repo: Repo, name: str) -> None:
 @cli.command("open")
 @click.pass_obj
 @click.argument("names", nargs=-1)
-def open_note(repo: Repo, names: Tuple[str]) -> None:
+def open_cmd(repo: Repo, names: Tuple[str]) -> None:
     """
     Open an existing note.
     """
@@ -42,7 +42,7 @@ def open_note(repo: Repo, names: Tuple[str]) -> None:
 
 @cli.command("ls")
 @click.pass_obj
-def ls_note(repo: Repo) -> None:
+def ls_cmd(repo: Repo) -> None:
     """
     List notes.
     """
@@ -54,7 +54,7 @@ def ls_note(repo: Repo) -> None:
 @cli.command("rm")
 @click.pass_obj
 @click.argument("names", nargs=-1)
-def rm_note(repo: Repo, names: Tuple[str]) -> None:
+def rm_cmd(repo: Repo, names: Tuple[str]) -> None:
     """
     Delete notes.
     """
@@ -63,7 +63,7 @@ def rm_note(repo: Repo, names: Tuple[str]) -> None:
 
 @cli.command("daily")
 @click.pass_obj
-def daily_note(repo: Repo) -> None:
+def daily_cmd(repo: Repo) -> None:
     """
     Open daily note.
     """
@@ -72,7 +72,7 @@ def daily_note(repo: Repo) -> None:
 
 @cli.command("last")
 @click.pass_obj
-def last_note(repo: Repo) -> None:
+def last_cmd(repo: Repo) -> None:
     """
     Open last edited note.
     """
@@ -89,6 +89,24 @@ def grep_cmd(repo: Repo, args: Tuple[str, ...]) -> None:
     Use ripgrep through parse through notes.
     """
     repo.grep_notes(args)
+
+
+@cli.command("sync")
+@click.pass_obj
+def sync_cmd(repo: Repo) -> None:
+    """
+    Sync notes using git.
+    """
+    repo.sync_notes()
+
+
+@cli.command("status")
+@click.pass_obj
+def status_cmd(repo: Repo) -> None:
+    """
+    Get status of notes with git.
+    """
+    repo.status()
 
 
 if __name__ == "__main__":

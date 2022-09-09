@@ -1,3 +1,4 @@
+import datetime as dt
 import pathlib
 import subprocess
 from typing import List, Tuple
@@ -45,3 +46,19 @@ class Shell:
     def user_confirmation(self, prompt: str) -> bool:
         answer = input(prompt)
         return answer.lower() in ("y", "yes")
+
+    def git_add(self, directory: pathlib.Path) -> None:
+        with pushd(directory.as_posix()):
+            subprocess.call(["git", "add", "."])
+
+    def git_commit(self, directory: pathlib.Path) -> None:
+        with pushd(directory.as_posix()):
+            subprocess.call(["git", "commit", "-m", dt.datetime.now().isoformat()])
+
+    def git_push(self, directory: pathlib.Path) -> None:
+        with pushd(directory.as_posix()):
+            subprocess.call(["git", "push"])
+
+    def git_status(self, directory: pathlib.Path) -> None:
+        with pushd(directory.as_posix()):
+            subprocess.call(["git", "status"])

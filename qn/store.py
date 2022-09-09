@@ -54,6 +54,14 @@ class NoteStore:
     def grep(self, args: Tuple[str, ...]) -> None:
         self._shell.grep(self._root, args)
 
+    def sync(self) -> None:
+        self._shell.git_add(self._root)
+        self._shell.git_commit(self._root)
+        self._shell.git_push(self._root)
+
+    def status(self) -> None:
+        self._shell.git_status(self._root)
+
     def _interactively_retrieve_names(self) -> Tuple[str, ...]:
         paths = self._retrieve_paths_in_root()
         names = self._shell.fzf(self._root, paths)
