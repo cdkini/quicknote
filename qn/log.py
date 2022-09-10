@@ -18,7 +18,7 @@ class CommandLogger:
         command = " ".join(arg for arg in args)
         entry = f"{time} - {command}\n"
 
-        path = self._root.joinpath(".history.log")
+        path = self._root.joinpath(".history")
 
         with path.open("a") as f:
             f.write(entry)
