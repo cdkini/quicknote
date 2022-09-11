@@ -106,7 +106,8 @@ class NoteStore:
         return self._determine_path_from_name(closest_name)
 
     def _find_closest_name(self, name: str) -> Optional[str]:
-        names = list(self._notes.keys())
+        name = name.lower()
+        names = [name.lower() for name in self._notes.keys()]
         matches = difflib.get_close_matches(name, names)
         if len(matches) == 0:
             return None
