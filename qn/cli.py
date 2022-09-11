@@ -31,11 +31,12 @@ def add_cmd(repo: Repo, name: str) -> None:
 @cli.command("open")
 @click.pass_obj
 @click.argument("names", nargs=-1)
-def open_cmd(repo: Repo, names: Tuple[str]) -> None:
+@click.option("-L", "--last", "last", is_flag=True, default=False)
+def open_cmd(repo: Repo, names: Tuple[str], last: bool) -> None:
     """
     Open an existing note.
     """
-    repo.open_notes(names)
+    repo.open_notes(names, last)
 
 
 @cli.command("put")
@@ -78,7 +79,7 @@ def rm_cmd(repo: Repo, names: Tuple[str]) -> None:
 @click.argument("args", nargs=-1)
 def grep_cmd(repo: Repo, args: Tuple[str, ...]) -> None:
     """
-    Use ripgrep through parse through notes.
+    Use ripgrep to search through notes.
     """
     repo.grep_notes(args)
 

@@ -23,8 +23,8 @@ class Repo:
     def add_note(self, name: str) -> None:
         self._notes.add(name)
 
-    def open_notes(self, names: Tuple[str, ...]) -> None:
-        self._notes.open(names)
+    def open_notes(self, names: Tuple[str, ...], last: bool) -> None:
+        self._notes.open(names, last)
 
     def put_note(self, name: str) -> None:
         self._notes.put(name)
