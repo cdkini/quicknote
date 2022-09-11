@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Optional, Tuple
 
 import click
 
@@ -31,12 +31,14 @@ def add_cmd(repo: Repo, name: str) -> None:
 @cli.command("open")
 @click.pass_obj
 @click.argument("names", nargs=-1)
-@click.option("-L", "--last", "last", is_flag=True, default=False)
-def open_cmd(repo: Repo, names: Tuple[str], last: bool) -> None:
+@click.option("-L", "--last", "sorter", type=click.Choice(Sorter), required=False)
+def open_cmd(repo: Repo, names: Tuple[str], sorter: Optional[Sorter]) -> None:
     """
     Open an existing note.
     """
-    repo.open_notes(names, last)
+    if sorter and len(names) > 0:
+        raise ValueError("Can only use '-L/--last' flag when no notes are specified")
+    repo.open_notes(names, sorter)
 
 
 @cli.command("put")

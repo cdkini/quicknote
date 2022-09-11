@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from qn.log import CommandLogger
 from qn.shell import Shell
@@ -23,8 +23,8 @@ class Repo:
     def add_note(self, name: str) -> None:
         self._notes.add(name)
 
-    def open_notes(self, names: Tuple[str, ...], last: bool) -> None:
-        self._notes.open(names, last)
+    def open_notes(self, names: Tuple[str, ...], sorter: Optional[Sorter]) -> None:
+        self._notes.open(names, sorter)
 
     def put_note(self, name: str) -> None:
         self._notes.put(name)

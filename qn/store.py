@@ -28,14 +28,10 @@ class NoteStore:
         path = self._determine_path_from_name(name)
         self._shell.open([path])
 
-    def open(self, names: Tuple[str, ...], last: bool = False) -> None:
-        if last:
-            if len(names) > 0:
-                raise ValueError(
-                    "Can only use '-L/--last' flag when no notes are specified"
-                )
-            last_modified = self.list(sorter=Sorter.MODIFIED)[-1]
-            names = (last_modified,)
+    def open(self, names: Tuple[str, ...], sorter: Optional[Sorter] = None) -> None:
+        if sorter:
+            last = self.list(sorter=sorter)[-1]
+            names = (last,)
         else:
             if len(names) == 0:
                 names = self._interactively_retrieve_names()
