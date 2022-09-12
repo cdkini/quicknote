@@ -10,7 +10,7 @@ from qn.utils import pushd
 
 class Shell:
 
-    FZF_OPTS = '--preview "bat --style=numbers --color=always --line-range :500 {}"'
+    FZF_OPTS = '-m --preview "bat --style=numbers --color=always --line-range :500 {}"'
 
     def __init__(self, editor: str = "nvim", grep_cmd: str = "rg") -> None:
         self._editor = editor
