@@ -1,13 +1,17 @@
 import difflib
+import os
 import pathlib
 from typing import Callable, Dict, List, Optional, Tuple
 
 from qn.log import CommandLogger
 from qn.shell import Shell
-from qn.utils import Sorter, determine_root, user_choice, user_confirmation
+from qn.utils import Sorter, user_choice, user_confirmation
 
 
 class Repo:
+
+    ENV_VAR = "QN_ROOT"
+
     def __init__(self, root: pathlib.Path, shell: Shell, logger: CommandLogger) -> None:
         self._root = root
         self._shell = shell
@@ -25,10 +29,24 @@ class Repo:
 
     @classmethod
     def create(cls) -> "Repo":
-        root = determine_root()
+        root = cls._determine_root()
         shell = Shell()
         logger = CommandLogger(root=root)
         return cls(root=root, shell=shell, logger=logger)
+
+    @classmethod
+    def _determine_root(cls) -> pathlib.Path:
+        path = os.environ.get(cls.ENV_VAR)
+        if path is None:
+            raise ValueError(f"No value found for {cls.ENV_VAR} env var")
+
+        root = pathlib.Path(path)
+        if not root.exists():
+            raise ValueError(f"{cls.ENV_VAR} '{path}' does not exist")
+        if not root.is_dir():
+            raise ValueError(f"{cls.ENV_VAR} '{path}' is not a directory")
+
+        return root
 
     def add(self, name: str) -> None:
         if name in self._notes:
@@ -80,13 +98,13 @@ class Repo:
     def grep(self, args: Tuple[str, ...]) -> None:
         self._shell.grep(self._root, args)
 
+    def status(self) -> None:
+        self._shell.git_status(self._root)
+
     def sync(self) -> None:
         self._shell.git_add(self._root)
         self._shell.git_commit(self._root)
         self._shell.git_push(self._root)
-
-    def status(self) -> None:
-        self._shell.git_status(self._root)
 
     def log(self) -> None:
         self._logger.log()
