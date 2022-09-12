@@ -15,7 +15,7 @@ def cli(ctx: click.Context) -> None:
     """
     repo = Repo.create()
     ctx.obj = repo
-    ctx.call_on_close(repo.log_command)
+    ctx.call_on_close(repo.log)
 
 
 @cli.command("add")
@@ -25,7 +25,7 @@ def add_cmd(repo: Repo, name: str) -> None:
     """
     Create a new note.
     """
-    repo.add_note(name)
+    repo.add(name)
 
 
 @cli.command("open")
@@ -38,7 +38,7 @@ def open_cmd(repo: Repo, names: Tuple[str], sorter: Optional[Sorter]) -> None:
     """
     if sorter and len(names) > 0:
         raise ValueError("Can only use '-L/--last' flag when no notes are specified")
-    repo.open_notes(names, sorter)
+    repo.open(names, sorter)
 
 
 @cli.command("put")
@@ -48,7 +48,7 @@ def put_cmd(repo: Repo, name: str) -> None:
     """
     Open a note if it exists else create a new one.
     """
-    repo.put_note(name)
+    repo.put(name)
 
 
 @cli.command("ls")
@@ -59,7 +59,7 @@ def ls_cmd(repo: Repo, sorter: Sorter, reverse: bool) -> None:
     """
     List notes.
     """
-    notes = repo.list_notes(sorter=sorter, reverse=reverse)
+    notes = repo.list(sorter=sorter, reverse=reverse)
     for note in notes:
         click.echo(note)
 
@@ -71,7 +71,7 @@ def rm_cmd(repo: Repo, names: Tuple[str]) -> None:
     """
     Delete notes.
     """
-    repo.delete_notes(names)
+    repo.delete(names)
 
 
 @cli.command(
@@ -83,7 +83,7 @@ def grep_cmd(repo: Repo, args: Tuple[str, ...]) -> None:
     """
     Use ripgrep to search through notes.
     """
-    repo.grep_notes(args)
+    repo.grep(args)
 
 
 @cli.command("sync")
@@ -92,7 +92,7 @@ def sync_cmd(repo: Repo) -> None:
     """
     Sync notes using git.
     """
-    repo.sync_notes()
+    repo.sync()
 
 
 @cli.command("status")
