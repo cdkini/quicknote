@@ -51,6 +51,15 @@ def put_cmd(repo: Repo, name: str) -> None:
     repo.put(name)
 
 
+@cli.command("daily")
+@click.pass_obj
+def daily_cmd(repo: Repo) -> None:
+    """
+    Open your daily note (formatted YYYY-MM-DD).
+    """
+    repo.daily()
+
+
 @cli.command("ls")
 @click.option("-s", "--sort", "sorter", type=click.Choice(Sorter), default=Sorter.NAME)
 @click.option("-r", "--reverse", "reverse", is_flag=True, default=False)

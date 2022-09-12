@@ -1,3 +1,4 @@
+import datetime as dt
 import difflib
 import os
 import pathlib
@@ -69,6 +70,10 @@ class Repo:
     def put(self, name: str) -> None:
         path = self._determine_path_from_name(name)
         self._shell.open([path])
+
+    def daily(self) -> None:
+        today = str(dt.date.today())
+        self.put(today)
 
     def list(self, sorter: Sorter = Sorter.NAME, reverse: bool = False) -> List[str]:
         if sorter is Sorter.NAME:
