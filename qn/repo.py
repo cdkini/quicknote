@@ -1,11 +1,13 @@
+from __future__ import annotations
+
 import datetime as dt
 import difflib
 import os
 import pathlib
 from typing import Callable, Dict, List, Optional, Tuple
 
+import qn.shell as shell
 from qn.log import CommandLogger
-from qn.shell import Shell
 from qn.utils import Sorter, user_choice, user_confirmation
 
 
@@ -13,9 +15,8 @@ class Repo:
 
     ENV_VAR = "QN_ROOT"
 
-    def __init__(self, root: pathlib.Path, shell: Shell, logger: CommandLogger) -> None:
+    def __init__(self, root: pathlib.Path, logger: CommandLogger) -> None:
         self._root = root
-        self._shell = shell
         self._logger = logger
         self._notes = self._init_notes()
 
@@ -29,11 +30,10 @@ class Repo:
         return {path.stem: path for path in paths}
 
     @classmethod
-    def create(cls) -> "Repo":
+    def create(cls) -> Repo:
         root = cls._determine_root()
-        shell = Shell()
         logger = CommandLogger(root=root)
-        return cls(root=root, shell=shell, logger=logger)
+        return cls(root=root, logger=logger)
 
     @classmethod
     def _determine_root(cls) -> pathlib.Path:
@@ -54,7 +54,7 @@ class Repo:
             raise FileExistsError(f"'{name}' already exists")
 
         path = self._determine_path_from_name(name)
-        self._shell.open([path])
+        shell.open_with_editor([path])
 
     def open(self, names: Tuple[str, ...], sorter: Optional[Sorter] = None) -> None:
         if sorter:
@@ -65,11 +65,11 @@ class Repo:
                 names = self._interactively_retrieve_names()
 
         paths = self._determine_paths_from_names(names)
-        self._shell.open(paths)
+        shell.open_with_editor(paths)
 
     def put(self, name: str) -> None:
         path = self._determine_path_from_name(name)
-        self._shell.open([path])
+        shell.open_with_editor([path])
 
     def daily(self) -> None:
         today = str(dt.date.today())
@@ -101,22 +101,22 @@ class Repo:
                 path.unlink()
 
     def grep(self, args: Tuple[str, ...]) -> None:
-        self._shell.grep(self._root, args)
+        shell.grep(self._root, args)
 
     def status(self) -> None:
-        self._shell.git_status(self._root)
+        shell.git_status(self._root)
 
     def sync(self) -> None:
-        self._shell.git_add(self._root)
-        self._shell.git_commit(self._root)
-        self._shell.git_push(self._root)
+        shell.git_add(self._root)
+        shell.git_commit(self._root)
+        shell.git_push(self._root)
 
     def log(self) -> None:
         self._logger.log()
 
     def _interactively_retrieve_names(self) -> Tuple[str, ...]:
         paths = list(self._notes.values())
-        names = self._shell.fzf(self._root, paths)
+        names = shell.fzf(self._root, paths)
         return names
 
     def _determine_paths_from_names(self, names: Tuple[str, ...]) -> List[pathlib.Path]:
