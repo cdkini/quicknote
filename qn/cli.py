@@ -99,7 +99,7 @@ def grep_cmd(repo: Repo, args: Tuple[str, ...]) -> None:
 @click.pass_obj
 def sync_cmd(repo: Repo) -> None:
     """
-    Sync notes using git.
+    Sync notes with GitHub.
     """
     repo.sync()
 
@@ -111,6 +111,15 @@ def status_cmd(repo: Repo) -> None:
     Get status of notes with git.
     """
     repo.status()
+
+
+@cli.command("web")
+@click.pass_obj
+def web_cmd(repo: Repo) -> None:
+    """
+    Open notes in GitHub.
+    """
+    repo.web()
 
 
 if __name__ == "__main__":

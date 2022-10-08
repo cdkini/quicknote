@@ -111,6 +111,10 @@ class Repo:
         shell.git_commit(self._root)
         shell.git_push(self._root)
 
+    def web(self) -> None:
+        url = shell.git_get_url(self._root)
+        shell.open_in_browser(url)
+
     def log(self) -> None:
         self._logger.log()
 

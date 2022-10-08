@@ -9,6 +9,7 @@ from qn.utils import pushd
 
 EDITOR = "nvim"
 GREP_CMD = "rg"
+REMOTE_NAME = "origin"
 FZF_OPTS = '-m --preview "bat --style=numbers --color=always --line-range :500 {}"'
 
 
@@ -19,6 +20,10 @@ def open_with_editor(paths: List[pathlib.Path]) -> None:
         command.append(str_path)
 
     subprocess.call(command)
+
+
+def open_in_browser(url: str) -> None:
+    subprocess.call(["open", url])
 
 
 def grep(directory: pathlib.Path, args: Tuple[str, ...]) -> None:
@@ -58,3 +63,10 @@ def git_push(directory: pathlib.Path) -> None:
 def git_status(directory: pathlib.Path) -> None:
     with pushd(directory.as_posix()):
         subprocess.call(["git", "status"])
+
+
+def git_get_url(directory: pathlib.Path) -> str:
+    with pushd(directory.as_posix()):
+        out = subprocess.check_output(["git", "remote", "get-url", REMOTE_NAME])
+
+    return out.decode("utf-8").strip()
