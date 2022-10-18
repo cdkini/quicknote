@@ -27,7 +27,7 @@ class Repo:
                 self._root.iterdir(),
             )
         )
-        return {path.stem: path for path in paths}
+        return {path.stem.lower(): path for path in paths}
 
     @classmethod
     def create(cls) -> Repo:
