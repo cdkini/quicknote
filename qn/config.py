@@ -7,6 +7,9 @@ from dataclasses import asdict, dataclass
 
 @dataclass
 class Config:
+
+    FILE_NAME = ".config.json"
+
     def __init__(
         self,
         editor: str = "vim",  # Alternative - nvim
@@ -22,7 +25,7 @@ class Config:
 
     @classmethod
     def parse_from_root(cls, root: pathlib.Path) -> Config:
-        config_path = root.joinpath(".config")
+        config_path = root.joinpath(cls.FILE_NAME)
         if not config_path.exists():
             config = cls()
             config.write_to_disk(config_path)

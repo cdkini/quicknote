@@ -4,6 +4,9 @@ import sys
 
 
 class CommandLogger:
+
+    FILE_NAME = ".history"
+
     def __init__(self, root: pathlib.Path) -> None:
         self._root = root
 
@@ -18,7 +21,7 @@ class CommandLogger:
         command = " ".join(arg for arg in args)
         entry = f"{time} - {command}\n"
 
-        path = self._root.joinpath(".history")
+        path = self._root.joinpath(self.FILE_NAME)
 
         with path.open("a") as f:
             f.write(entry)
