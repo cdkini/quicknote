@@ -21,7 +21,7 @@ def cli(ctx: click.Context) -> None:
 @click.pass_obj
 def config_cmd(repo: Repo) -> None:
     """
-    WIP - Configure quicknote settings.
+    WIP - Configure settings.
     """
     raise NotImplementedError()
 
@@ -39,30 +39,20 @@ def add_cmd(repo: Repo, name: str) -> None:
 @cli.command("open")
 @click.pass_obj
 @click.argument("names", nargs=-1)
-def open_cmd(repo: Repo, names: Tuple[str]) -> None:
+@click.option("-D", "--daily", is_flag=True, default=False)
+@click.option("-c", "--create", is_flag=True, default=False)
+def open_cmd(repo: Repo, names: Tuple[str], daily: bool, create: bool) -> None:
     """
-    Open an existing note.
+    Open note(s).
     """
-    repo.open(names)
-
-
-@cli.command("put")
-@click.pass_obj
-@click.argument("name", nargs=1)
-def put_cmd(repo: Repo, name: str) -> None:
-    """
-    Open a note if it exists else create a new one.
-    """
-    repo.put(name)
-
-
-@cli.command("daily")
-@click.pass_obj
-def daily_cmd(repo: Repo) -> None:
-    """
-    Open your daily note (formatted YYYY-MM-DD).
-    """
-    repo.daily()
+    if daily:
+        if names:
+            raise ValueError("Cannot pass note names when using --daily flag")
+        if create:
+            raise ValueError("Cannot use --daily and --create flags together")
+        repo.daily()
+    else:
+        repo.open(names=names, create_if_not_exists=create)
 
 
 @cli.command("ls")
@@ -82,7 +72,7 @@ def ls_cmd(repo: Repo, reverse: bool) -> None:
 @click.argument("names", nargs=-1)
 def rm_cmd(repo: Repo, names: Tuple[str]) -> None:
     """
-    Delete notes.
+    Delete note(s).
     """
     repo.delete(names)
 
@@ -94,7 +84,7 @@ def rm_cmd(repo: Repo, names: Tuple[str]) -> None:
 @click.argument("args", nargs=-1)
 def grep_cmd(repo: Repo, args: Tuple[str, ...]) -> None:
     """
-    Use ripgrep to search through notes.
+    Search through notes.
     """
     repo.grep(args)
 
@@ -112,7 +102,7 @@ def sync_cmd(repo: Repo) -> None:
 @click.pass_obj
 def status_cmd(repo: Repo) -> None:
     """
-    Get status of notes with git.
+    Get status of notes with Git.
     """
     repo.status()
 

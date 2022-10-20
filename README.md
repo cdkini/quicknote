@@ -19,15 +19,16 @@ qn config
 
 ### Commands
 ```
+Primary Commands:
   add     Create a new note.
-  config  Configure quicknote settings.
-  daily   Open your daily note (formatted YYYY-MM-DD).
-  grep    Use ripgrep to search through notes.
+  open    Open note(s).
+  grep    Search through notes.
   ls      List notes.
-  open    Open an existing note.
-  put     Open a note if it exists else create a new one.
-  rm      Delete notes.
-  status  Get status of notes with git.
+  rm      Delete note(s).
+
+Misc Commands:
+  config  Configure settings.
+  status  Get status of notes with Git.
   sync    Sync notes with GitHub.
   web     Open notes in GitHub.
 ```
