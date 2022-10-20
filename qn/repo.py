@@ -20,9 +20,9 @@ class Repo:
         self._root = root
         self._logger = logger
         self._shell = shell
-        self._notes = self._init_notes()
 
-    def _init_notes(self) -> Dict[str, pathlib.Path]:
+    @property
+    def notes(self) -> Dict[str, pathlib.Path]:
         paths = list(
             filter(
                 lambda n: n.is_file() and not n.stem.startswith("."),
@@ -54,7 +54,7 @@ class Repo:
         return root
 
     def add(self, name: str) -> None:
-        if name in self._notes:
+        if name in self.notes:
             raise FileExistsError(f"'{name}' already exists")
 
         path = self._determine_path_from_name(name)
@@ -81,18 +81,18 @@ class Repo:
 
     def list(self, sorter: Sorter = Sorter.NAME, reverse: bool = False) -> List[str]:
         if sorter is Sorter.NAME:
-            return sorted(self._notes.keys(), reverse=reverse)
+            return sorted(self.notes.keys(), reverse=reverse)
 
         key_fn: Optional[Callable] = None
         if sorter is Sorter.CREATED:
-            key_fn = lambda n: self._notes[n].stat().st_birthtime  # noqa: E731
+            key_fn = lambda n: self.notes[n].stat().st_birthtime  # noqa: E731
         elif sorter is Sorter.MODIFIED:
-            key_fn = lambda n: self._notes[n].stat().st_mtime  # noqa: E731
+            key_fn = lambda n: self.notes[n].stat().st_mtime  # noqa: E731
         elif sorter is Sorter.ACCESSED:
-            key_fn = lambda n: self._notes[n].stat().st_atime  # noqa: E731
+            key_fn = lambda n: self.notes[n].stat().st_atime  # noqa: E731
 
         assert key_fn is not None
-        return sorted(self._notes, key=key_fn, reverse=reverse)
+        return sorted(self.notes, key=key_fn, reverse=reverse)
 
     def delete(self, names: Tuple[str, ...]) -> None:
         if len(names) == 0:
@@ -123,7 +123,7 @@ class Repo:
         self._logger.log()
 
     def _interactively_retrieve_names(self) -> Tuple[str, ...]:
-        paths = list(self._notes.values())
+        paths = list(self.notes.values())
         names = self._shell.fzf(paths)
         return names
 
@@ -154,7 +154,7 @@ class Repo:
 
     def _find_closest_name(self, name: str) -> Optional[str]:
         name = name.lower()
-        names = [name.lower() for name in self._notes.keys()]
+        names = [name.lower() for name in self.notes.keys()]
         matches = difflib.get_close_matches(name, names)
         if len(matches) == 0:
             return None

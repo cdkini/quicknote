@@ -7,13 +7,18 @@ from dataclasses import asdict, dataclass
 
 @dataclass
 class Config:
-    editor = "vim"  # Alternative - nvim
-    grep_cmd = "grep"  # Alternative - rg or ag
-    git_remote_name = "origin"
-    # Alternative - '-m --preview "bat --style=numbers --color=always --line-range :500 {}"'
-    fzf_opts = '-m --preview "cat {}"'
-
-    # TODO(cdkini): Use a better config file format than JSON
+    def __init__(
+        self,
+        editor: str = "vim",  # Alternative - nvim
+        grep_cmd: str = "grep",  # Alternative - rg or ag
+        git_remote_name: str = "origin",
+        # Alternative - '-m --preview "bat --style=numbers --color=always --line-range :500 {}"'
+        fzf_opts: str = '-m --preview "cat {}"',
+    ) -> None:
+        self.editor = editor
+        self.grep_cmd = grep_cmd
+        self.git_remote_name = git_remote_name
+        self.fzf_opts = fzf_opts
 
     @classmethod
     def parse_from_root(cls, root: pathlib.Path) -> Config:
