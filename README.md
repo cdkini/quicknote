@@ -13,13 +13,14 @@ brew install fzf
 # 1. Point your root env var at your notes directory
 export QN_ROOT=<YOUR_NOTES_PATH>
 
-# 2. Use quicknote!
-qn <CMD>
+# 2. Configure any relevant settings
+qn config
 ```
 
 ### Commands
 ```
   add     Create a new note.
+  config  Configure quicknote settings.
   daily   Open your daily note (formatted YYYY-MM-DD).
   grep    Use ripgrep to search through notes.
   ls      List notes.
