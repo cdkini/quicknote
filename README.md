@@ -10,8 +10,11 @@ brew install fzf
 
 ### Setup
 ```bash
-# Point your root env var at your notes directory
-export QN_ROOT=... # Alternatively, add to .bashrc/.zshrc
+# 1. Point your root env var at your notes directory
+export QN_ROOT=<YOUR_NOTES_PATH>
+
+# 2. Use quicknote!
+qn <CMD>
 ```
 
 ### Commands
