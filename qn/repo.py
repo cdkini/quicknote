@@ -54,14 +54,10 @@ class Repo:
 
         return root
 
-    def add(self, name: str, strict: bool) -> None:
-        if strict and name in self.notes:
+    def add(self, name: str, exists_ok: bool) -> None:
+        if not exists_ok and name in self.notes:
             raise FileExistsError(f"'{name}' already exists")
 
-        path = self._determine_path_from_name(name)
-        self._shell.open_with_editor(paths=[path])
-
-    def upsert(self, name: str) -> None:
         path = self._determine_path_from_name(name)
         self._shell.open_with_editor(paths=[path])
 

@@ -38,6 +38,7 @@ Additionally, I use [vimwiki](https://github.com/vimwiki/vimwiki) to leverage th
 ```
 Primary Commands:
   add     Create a new note.
+  upsert  Update a note if it exists or create a new one.
   open    Open note(s).
   grep    Search through notes.
   ls      List notes.

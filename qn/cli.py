@@ -29,12 +29,21 @@ def config_cmd(repo: Repo) -> None:
 @cli.command("add")
 @click.pass_obj
 @click.argument("name", nargs=1)
-@click.option("-S", "--strict", is_flag=True, default=False)
-def add_cmd(repo: Repo, name: str, strict: bool) -> None:
+def add_cmd(repo: Repo, name: str) -> None:
     """
     Create a new note.
     """
-    repo.add(name=name, strict=strict)
+    repo.add(name=name, exists_ok=False)
+
+
+@cli.command("upsert")
+@click.pass_obj
+@click.argument("name", nargs=1)
+def upsert_cmd(repo: Repo, name: str) -> None:
+    """
+    Update a note if it exists or create a new one.
+    """
+    repo.add(name=name, exists_ok=True)
 
 
 @cli.command("open")
