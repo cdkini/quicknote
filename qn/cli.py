@@ -18,6 +18,15 @@ def cli(ctx: click.Context) -> None:
     ctx.call_on_close(repo.log)
 
 
+@cli.command("config")
+@click.pass_obj
+def config_cmd(repo: Repo) -> None:
+    """
+    WIP - Configure quicknote settings.
+    """
+    raise NotImplementedError()
+
+
 @cli.command("add")
 @click.pass_obj
 @click.argument("name", nargs=1)

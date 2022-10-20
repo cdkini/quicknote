@@ -7,14 +7,9 @@ import pyfzf
 
 from qn.utils import pushd
 
-EDITOR = "nvim"
-GREP_CMD = "rg"
-REMOTE_NAME = "origin"
-FZF_OPTS = '-m --preview "bat --style=numbers --color=always --line-range :500 {}"'
 
-
-def open_with_editor(paths: List[pathlib.Path]) -> None:
-    command = [EDITOR]
+def open_with_editor(editor: str, paths: List[pathlib.Path]) -> None:
+    command = [editor]
     for path in paths:
         str_path = path.as_posix()
         command.append(str_path)
@@ -26,8 +21,8 @@ def open_in_browser(url: str) -> None:
     subprocess.call(["open", url])
 
 
-def grep(directory: pathlib.Path, args: Tuple[str, ...]) -> None:
-    command = [GREP_CMD]
+def grep(cmd: str, directory: pathlib.Path, args: Tuple[str, ...]) -> None:
+    command = [cmd]
     for arg in args:
         command.append(arg)
 
@@ -37,11 +32,13 @@ def grep(directory: pathlib.Path, args: Tuple[str, ...]) -> None:
     subprocess.call(command)
 
 
-def fzf(directory: pathlib.Path, paths: List[pathlib.Path]) -> Tuple[str, ...]:
+def fzf(
+    directory: pathlib.Path, paths: List[pathlib.Path], opts: str = ""
+) -> Tuple[str, ...]:
     fzf = pyfzf.pyfzf.FzfPrompt()
     with pushd(directory.as_posix()):
         choices = sorted(map(lambda p: p.name, paths))
-        results = fzf.prompt(choices, FZF_OPTS)
+        results = fzf.prompt(choices, opts)
     return tuple(results)
 
 
@@ -65,8 +62,8 @@ def git_status(directory: pathlib.Path) -> None:
         subprocess.call(["git", "status"])
 
 
-def git_get_url(directory: pathlib.Path) -> str:
+def git_get_url(directory: pathlib.Path, remote_name: str) -> str:
     with pushd(directory.as_posix()):
-        out = subprocess.check_output(["git", "remote", "get-url", REMOTE_NAME])
+        out = subprocess.check_output(["git", "remote", "get-url", remote_name])
 
     return out.decode("utf-8").strip()
