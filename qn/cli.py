@@ -21,9 +21,9 @@ def cli(ctx: click.Context) -> None:
 @click.pass_obj
 def config_cmd(repo: Repo) -> None:
     """
-    WIP - Configure settings.
+    Configure settings.
     """
-    raise NotImplementedError()
+    repo.config()
 
 
 @cli.command("add")

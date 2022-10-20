@@ -15,10 +15,13 @@ class Repo:
 
     ENV_VAR = "QN_ROOT"
 
-    def __init__(self, root: pathlib.Path, shell: Shell, logger: CommandLogger) -> None:
+    def __init__(
+        self, root: pathlib.Path, shell: Shell, logger: CommandLogger, config: Config
+    ) -> None:
         self._root = root
         self._logger = logger
         self._shell = shell
+        self._config = config
 
     @property
     def notes(self) -> Dict[str, pathlib.Path]:
@@ -36,7 +39,7 @@ class Repo:
         config = Config.parse_from_root(root)
         shell = Shell(root=root, config=config)
         logger = CommandLogger(root)
-        return cls(root=root, shell=shell, logger=logger)
+        return cls(root=root, shell=shell, logger=logger, config=config)
 
     @classmethod
     def _determine_root(cls) -> pathlib.Path:
@@ -101,6 +104,10 @@ class Repo:
 
     def log(self) -> None:
         self._logger.log()
+
+    def config(self) -> None:
+        config_path = self._root.joinpath(self._config.FILE_PATH)
+        self._shell.open_with_editor([config_path])
 
     def _interactively_retrieve_names(self) -> Tuple[str, ...]:
         paths = list(self.notes.values())

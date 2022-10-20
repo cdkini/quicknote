@@ -8,7 +8,7 @@ from dataclasses import asdict, dataclass
 @dataclass
 class Config:
 
-    FILE_NAME = ".config.json"
+    FILE_PATH = ".config.json"
 
     def __init__(
         self,
@@ -25,7 +25,7 @@ class Config:
 
     @classmethod
     def parse_from_root(cls, root: pathlib.Path) -> Config:
-        config_path = root.joinpath(cls.FILE_NAME)
+        config_path = root.joinpath(cls.FILE_PATH)
         if not config_path.exists():
             config = cls()
             config.write_to_disk(config_path)
