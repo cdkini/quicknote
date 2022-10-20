@@ -4,12 +4,11 @@ import datetime as dt
 import difflib
 import os
 import pathlib
-from typing import Callable, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from qn.config import Config
 from qn.log import CommandLogger
 from qn.shell import Shell
-from qn.utils import Sorter, user_choice, user_confirmation
 
 
 class Repo:
@@ -60,13 +59,9 @@ class Repo:
         path = self._determine_path_from_name(name)
         self._shell.open_with_editor(paths=[path])
 
-    def open(self, names: Tuple[str, ...], sorter: Optional[Sorter] = None) -> None:
-        if sorter:
-            last = self.list(sorter=sorter)[-1]
-            names = (last,)
-        else:
-            if len(names) == 0:
-                names = self._interactively_retrieve_names()
+    def open(self, names: Tuple[str, ...]) -> None:
+        if len(names) == 0:
+            names = self._interactively_retrieve_names()
 
         paths = self._determine_paths_from_names(names)
         self._shell.open_with_editor(paths=paths)
@@ -79,20 +74,8 @@ class Repo:
         today = str(dt.date.today())
         self.put(today)
 
-    def list(self, sorter: Sorter = Sorter.NAME, reverse: bool = False) -> List[str]:
-        if sorter is Sorter.NAME:
-            return sorted(self.notes.keys(), reverse=reverse)
-
-        key_fn: Optional[Callable] = None
-        if sorter is Sorter.CREATED:
-            key_fn = lambda n: self.notes[n].stat().st_birthtime  # noqa: E731
-        elif sorter is Sorter.MODIFIED:
-            key_fn = lambda n: self.notes[n].stat().st_mtime  # noqa: E731
-        elif sorter is Sorter.ACCESSED:
-            key_fn = lambda n: self.notes[n].stat().st_atime  # noqa: E731
-
-        assert key_fn is not None
-        return sorted(self.notes, key=key_fn, reverse=reverse)
+    def list(self, reverse: bool = False) -> List[str]:
+        return sorted(self.notes.keys(), reverse=reverse)
 
     def delete(self, names: Tuple[str, ...]) -> None:
         if len(names) == 0:
@@ -100,7 +83,7 @@ class Repo:
 
         paths = self._determine_paths_from_names(names)
         for path in paths:
-            confirmation = user_confirmation(f"Delete '{path.stem}' [y/n]: ")
+            confirmation = self._user_confirmation(f"Delete '{path.stem}' [y/n]: ")
             if confirmation:
                 path.unlink()
 
@@ -160,4 +143,16 @@ class Repo:
             return None
         if len(matches) == 1:
             return matches[0]
-        return user_choice(matches)
+        return self._user_choice(matches)
+
+    def _user_confirmation(self, prompt: str) -> bool:
+        answer = input(prompt)
+        return answer.lower() in ("y", "yes")
+
+    def _user_choice(self, choices: List[str]) -> str:
+        for i, choice in enumerate(choices):
+            print(f"{i+1}: {choice}")
+
+        selection = int(input("Choice: "))
+
+        return choices[selection - 1]

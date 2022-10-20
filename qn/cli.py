@@ -1,9 +1,8 @@
-from typing import Optional, Tuple
+from typing import Tuple
 
 import click
 
 from qn.repo import Repo
-from qn.utils import Sorter
 
 
 @click.group(name="qn")
@@ -40,14 +39,11 @@ def add_cmd(repo: Repo, name: str) -> None:
 @cli.command("open")
 @click.pass_obj
 @click.argument("names", nargs=-1)
-@click.option("-L", "--last", "sorter", type=click.Choice(Sorter), required=False)
-def open_cmd(repo: Repo, names: Tuple[str], sorter: Optional[Sorter]) -> None:
+def open_cmd(repo: Repo, names: Tuple[str]) -> None:
     """
     Open an existing note.
     """
-    if sorter and len(names) > 0:
-        raise ValueError("Can only use '-L/--last' flag when no notes are specified")
-    repo.open(names, sorter)
+    repo.open(names)
 
 
 @cli.command("put")
@@ -70,14 +66,13 @@ def daily_cmd(repo: Repo) -> None:
 
 
 @cli.command("ls")
-@click.option("-s", "--sort", "sorter", type=click.Choice(Sorter), default=Sorter.NAME)
 @click.option("-r", "--reverse", "reverse", is_flag=True, default=False)
 @click.pass_obj
-def ls_cmd(repo: Repo, sorter: Sorter, reverse: bool) -> None:
+def ls_cmd(repo: Repo, reverse: bool) -> None:
     """
     List notes.
     """
-    notes = repo.list(sorter=sorter, reverse=reverse)
+    notes = repo.list(reverse=reverse)
     for note in notes:
         click.echo(note)
 

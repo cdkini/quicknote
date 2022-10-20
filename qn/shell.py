@@ -1,12 +1,24 @@
+import contextlib
 import datetime as dt
+import os
 import pathlib
 import subprocess
-from typing import List, Tuple
+from typing import Generator, List, Tuple
 
 import pyfzf
 
 from qn.config import Config
-from qn.utils import pushd
+
+
+# https://stackoverflow.com/a/13847807
+@contextlib.contextmanager
+def pushd(new_dir: str) -> Generator:
+    previous_dir = os.getcwd()
+    os.chdir(new_dir)
+    try:
+        yield
+    finally:
+        os.chdir(previous_dir)
 
 
 class Git:
