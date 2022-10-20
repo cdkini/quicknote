@@ -10,11 +10,22 @@ brew install fzf
 
 ### Setup
 ```bash
-# 1. Point your root env var at your notes directory
+# First, point your root env var at your notes directory
 export QN_ROOT=<YOUR_NOTES_PATH>
-
-# 2. Configure any relevant settings
+```
+```bash
+# Second, configure any relevant settings you might want
 qn config
+```
+
+These are my settings (which requires additional dependencies of `nvim`, `rg`, and `bat`)
+```json
+{
+    "editor": "nvim",
+    "grep_cmd": "rg",
+    "git_remote_name": "origin",
+    "fzf_opts": "-m --preview \"bat --style=numbers --color=always --line-range :500 {}\""
+}
 ```
 
 ### Commands
