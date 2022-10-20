@@ -30,10 +30,9 @@ class Config:
 
         with open(config_path) as f:
             data = json.load(f)
-
         return cls(**data)
 
     def write_to_disk(self, path: pathlib.Path) -> None:
+        data = asdict(self)
         with path.open("w") as f:
-            data = asdict(self)
             json.dump(data, f, indent=4)
