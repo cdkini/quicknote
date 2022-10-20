@@ -1,40 +1,29 @@
-### quicknote (qn)
+# quicknote (qn)
+quicknote is a terminal-based notetaking system design around speed and ease-of-use.
 
 
-### Requirements
-* fzf
-* bat
-* rg
-* nvim
+### Installation
+```bash
+pip install git+https://github.com/cdkini/quicknote.git
+brew install fzf
+```
 
+### Setup
+```bash
+# Point your root env var at your notes directory
+export QN_ROOT=... # Alternatively, add to .bashrc/.zshrc
+```
 
 ### Commands
-```bash
-Usage: qn [OPTIONS] COMMAND [ARGS]...
-
-  qn (quicknote) is a terminal-based notetaking system designed around speed
-  and ease-of-use.
-
-Options:
-  --help  Show this message and exit.
-
-Commands:
+```
   add     Create a new note.
-  grep    Use ripgrep through parse through notes.
+  daily   Open your daily note (formatted YYYY-MM-DD).
+  grep    Use ripgrep to search through notes.
   ls      List notes.
   open    Open an existing note.
   put     Open a note if it exists else create a new one.
   rm      Delete notes.
   status  Get status of notes with git.
-  sync    Sync notes using git.
-```
-
-
-### Useful Aliases
-```
-# Create a daily note
-qn put $(date +%Y-%m-%d)
-
-# Open the last accessed note
-qn open "$(qn ls -s accessed -r | head -n 1)"
+  sync    Sync notes with GitHub.
+  web     Open notes in GitHub.
 ```
