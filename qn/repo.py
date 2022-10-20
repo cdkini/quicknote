@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import datetime as dt
 import difflib
 import os
 import pathlib
@@ -55,24 +54,21 @@ class Repo:
 
         return root
 
-    def add(self, name: str) -> None:
-        if name in self.notes:
+    def add(self, name: str, strict: bool) -> None:
+        if strict and name in self.notes:
             raise FileExistsError(f"'{name}' already exists")
 
         path = self._determine_path_from_name(name)
         self._shell.open_with_editor(paths=[path])
 
-    def open(self, names: Tuple[str, ...], create_if_not_exists: bool) -> None:
-        names = names or self._interactively_retrieve_names()
-        paths = self._determine_paths_from_names(
-            names=names, try_closest=not create_if_not_exists
-        )
-        self._shell.open_with_editor(paths=paths)
-
-    def daily(self) -> None:
-        today = str(dt.date.today())
-        path = self._determine_path_from_name(today)
+    def upsert(self, name: str) -> None:
+        path = self._determine_path_from_name(name)
         self._shell.open_with_editor(paths=[path])
+
+    def open(self, names: Tuple[str, ...]) -> None:
+        names = names or self._interactively_retrieve_names()
+        paths = self._determine_paths_from_names(names=names)
+        self._shell.open_with_editor(paths=paths)
 
     def list(self, reverse: bool = False) -> List[str]:
         return sorted(self.notes.keys(), reverse=reverse)
@@ -114,14 +110,12 @@ class Repo:
         names = self._shell.fzf(paths)
         return names
 
-    def _determine_paths_from_names(
-        self, names: Tuple[str, ...], try_closest: bool = True
-    ) -> List[pathlib.Path]:
+    def _determine_paths_from_names(self, names: Tuple[str, ...]) -> List[pathlib.Path]:
         paths = []
 
         for name in names:
             path = self._determine_path_from_name(name)
-            if not path.exists() and try_closest:
+            if not path.exists():
                 path = self._determine_closest_path_from_name(name)
             paths.append(path)
 

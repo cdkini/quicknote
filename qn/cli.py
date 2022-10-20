@@ -29,30 +29,22 @@ def config_cmd(repo: Repo) -> None:
 @cli.command("add")
 @click.pass_obj
 @click.argument("name", nargs=1)
-def add_cmd(repo: Repo, name: str) -> None:
+@click.option("-S", "--strict", is_flag=True, default=False)
+def add_cmd(repo: Repo, name: str, strict: bool) -> None:
     """
     Create a new note.
     """
-    repo.add(name)
+    repo.add(name=name, strict=strict)
 
 
 @cli.command("open")
 @click.pass_obj
 @click.argument("names", nargs=-1)
-@click.option("-D", "--daily", is_flag=True, default=False)
-@click.option("-c", "--create", is_flag=True, default=False)
-def open_cmd(repo: Repo, names: Tuple[str], daily: bool, create: bool) -> None:
+def open_cmd(repo: Repo, names: Tuple[str]) -> None:
     """
     Open note(s).
     """
-    if daily:
-        if names:
-            raise ValueError("Cannot pass note names when using --daily flag")
-        if create:
-            raise ValueError("Cannot use --daily and --create flags together")
-        repo.daily()
-    else:
-        repo.open(names=names, create_if_not_exists=create)
+    repo.open(names=names)
 
 
 @cli.command("ls")

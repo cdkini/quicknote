@@ -12,10 +12,9 @@ class Config:
 
     def __init__(
         self,
-        editor: str = "vim",  # Alternative - nvim
-        grep_cmd: str = "grep",  # Alternative - rg or ag
+        editor: str = "vim",
+        grep_cmd: str = "grep",
         git_remote_name: str = "origin",
-        # Alternative - '-m --preview "bat --style=numbers --color=always --line-range :500 {}"'
         fzf_opts: str = '-m --preview "cat {}"',
     ) -> None:
         self.editor = editor
