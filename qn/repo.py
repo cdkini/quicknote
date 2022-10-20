@@ -6,9 +6,9 @@ import os
 import pathlib
 from typing import Callable, Dict, List, Optional, Tuple
 
-import qn.shell as shell
 from qn.config import Config
 from qn.log import CommandLogger
+from qn.shell import Shell
 from qn.utils import Sorter, user_choice, user_confirmation
 
 
@@ -16,12 +16,10 @@ class Repo:
 
     ENV_VAR = "QN_ROOT"
 
-    def __init__(
-        self, root: pathlib.Path, logger: CommandLogger, config: Config
-    ) -> None:
+    def __init__(self, root: pathlib.Path, shell: Shell, logger: CommandLogger) -> None:
         self._root = root
         self._logger = logger
-        self._config = config
+        self._shell = shell
         self._notes = self._init_notes()
 
     def _init_notes(self) -> Dict[str, pathlib.Path]:
@@ -37,8 +35,9 @@ class Repo:
     def create(cls) -> Repo:
         root = cls._determine_root()
         config = Config.parse_from_root(root)
+        shell = Shell(root=root, config=config)
         logger = CommandLogger(root)
-        return cls(root=root, logger=logger, config=config)
+        return cls(root=root, shell=shell, logger=logger)
 
     @classmethod
     def _determine_root(cls) -> pathlib.Path:
@@ -59,7 +58,7 @@ class Repo:
             raise FileExistsError(f"'{name}' already exists")
 
         path = self._determine_path_from_name(name)
-        shell.open_with_editor(editor=self._config.editor, paths=[path])
+        self._shell.open_with_editor(paths=[path])
 
     def open(self, names: Tuple[str, ...], sorter: Optional[Sorter] = None) -> None:
         if sorter:
@@ -70,11 +69,11 @@ class Repo:
                 names = self._interactively_retrieve_names()
 
         paths = self._determine_paths_from_names(names)
-        shell.open_with_editor(editor=self._config.editor, paths=paths)
+        self._shell.open_with_editor(paths=paths)
 
     def put(self, name: str) -> None:
         path = self._determine_path_from_name(name)
-        shell.open_with_editor(editor=self._config.editor, paths=[path])
+        self._shell.open_with_editor(paths=[path])
 
     def daily(self) -> None:
         today = str(dt.date.today())
@@ -106,28 +105,26 @@ class Repo:
                 path.unlink()
 
     def grep(self, args: Tuple[str, ...]) -> None:
-        shell.grep(cmd=self._config.grep_cmd, directory=self._root, args=args)
+        self._shell.grep(args=args)
 
     def status(self) -> None:
-        shell.git_status(self._root)
+        self._shell.git.status()
 
     def sync(self) -> None:
-        shell.git_add(self._root)
-        shell.git_commit(self._root)
-        shell.git_push(self._root)
+        self._shell.git.add()
+        self._shell.git.commit()
+        self._shell.git.push()
 
     def web(self) -> None:
-        url = shell.git_get_url(
-            directory=self._root, remote_name=self._config.git_remote_name
-        )
-        shell.open_in_browser(url)
+        url = self._shell.git.get_url()
+        self._shell.open_in_browser(url)
 
     def log(self) -> None:
         self._logger.log()
 
     def _interactively_retrieve_names(self) -> Tuple[str, ...]:
         paths = list(self._notes.values())
-        names = shell.fzf(self._root, paths, opts=self._config.fzf_opts)
+        names = self._shell.fzf(paths)
         return names
 
     def _determine_paths_from_names(self, names: Tuple[str, ...]) -> List[pathlib.Path]:

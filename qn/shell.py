@@ -5,65 +5,76 @@ from typing import List, Tuple
 
 import pyfzf
 
+from qn.config import Config
 from qn.utils import pushd
 
 
-def open_with_editor(editor: str, paths: List[pathlib.Path]) -> None:
-    command = [editor]
-    for path in paths:
-        str_path = path.as_posix()
-        command.append(str_path)
+class Git:
+    def __init__(self, root: pathlib.Path, remote_name: str) -> None:
+        self._root = root
+        self._remote_name = remote_name
 
-    subprocess.call(command)
+    def add(self) -> None:
+        with pushd(self._root.as_posix()):
+            subprocess.call(["git", "add", "."])
 
+    def commit(self) -> None:
+        with pushd(self._root.as_posix()):
+            subprocess.call(["git", "commit", "-m", dt.datetime.now().isoformat()])
 
-def open_in_browser(url: str) -> None:
-    subprocess.call(["open", url])
+    def push(self) -> None:
+        with pushd(self._root.as_posix()):
+            subprocess.call(["git", "push"])
 
+    def status(self) -> None:
+        with pushd(self._root.as_posix()):
+            subprocess.call(["git", "status"])
 
-def grep(cmd: str, directory: pathlib.Path, args: Tuple[str, ...]) -> None:
-    command = [cmd]
-    for arg in args:
-        command.append(arg)
+    def get_url(self) -> str:
+        with pushd(self._root.as_posix()):
+            out = subprocess.check_output(
+                ["git", "remote", "get-url", self._remote_name]
+            )
 
-    path = directory.as_posix()
-    command.append(path)
-
-    subprocess.call(command)
-
-
-def fzf(
-    directory: pathlib.Path, paths: List[pathlib.Path], opts: str = ""
-) -> Tuple[str, ...]:
-    fzf = pyfzf.pyfzf.FzfPrompt()
-    with pushd(directory.as_posix()):
-        choices = sorted(map(lambda p: p.name, paths))
-        results = fzf.prompt(choices, opts)
-    return tuple(results)
+        return out.decode("utf-8").strip()
 
 
-def git_add(directory: pathlib.Path) -> None:
-    with pushd(directory.as_posix()):
-        subprocess.call(["git", "add", "."])
+class Shell:
+    def __init__(self, root: pathlib.Path, config: Config) -> None:
+        self._root = root
+        self._editor = config.editor
+        self._grep_cmd = config.grep_cmd
+        self._git = Git(root=root, remote_name=config.git_remote_name)
+        self._fzf_opts = config.fzf_opts
 
+    @property
+    def git(self) -> Git:
+        return self._git
 
-def git_commit(directory: pathlib.Path) -> None:
-    with pushd(directory.as_posix()):
-        subprocess.call(["git", "commit", "-m", dt.datetime.now().isoformat()])
+    def open_with_editor(self, paths: List[pathlib.Path]) -> None:
+        command = [self._editor]
+        for path in paths:
+            str_path = path.as_posix()
+            command.append(str_path)
 
+        subprocess.call(command)
 
-def git_push(directory: pathlib.Path) -> None:
-    with pushd(directory.as_posix()):
-        subprocess.call(["git", "push"])
+    def open_in_browser(self, url: str) -> None:
+        subprocess.call(["open", url])
 
+    def grep(self, args: Tuple[str, ...]) -> None:
+        command = [self._grep_cmd]
+        for arg in args:
+            command.append(arg)
 
-def git_status(directory: pathlib.Path) -> None:
-    with pushd(directory.as_posix()):
-        subprocess.call(["git", "status"])
+        path = self._root.as_posix()
+        command.append(path)
 
+        subprocess.call(command)
 
-def git_get_url(directory: pathlib.Path, remote_name: str) -> str:
-    with pushd(directory.as_posix()):
-        out = subprocess.check_output(["git", "remote", "get-url", remote_name])
-
-    return out.decode("utf-8").strip()
+    def fzf(self, paths: List[pathlib.Path]) -> Tuple[str, ...]:
+        fzf = pyfzf.pyfzf.FzfPrompt()
+        with pushd(self._root.as_posix()):
+            choices = sorted(map(lambda p: p.name, paths))
+            results = fzf.prompt(choices, self._fzf_opts)
+        return tuple(results)
