@@ -14,7 +14,7 @@ def cli(ctx: click.Context) -> None:
     """
     repo = Repo.create()
     ctx.obj = repo
-    ctx.call_on_close(repo.log)
+    repo.log()
 
 
 @cli.command("config")
