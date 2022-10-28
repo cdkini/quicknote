@@ -8,6 +8,7 @@ from typing import Dict, List, Optional, Tuple
 from qn.config import Config
 from qn.log import CommandLogger
 from qn.shell import Shell
+from qn.utils import user_choice, user_confirmation
 
 
 class Repo:
@@ -75,7 +76,7 @@ class Repo:
 
         paths = self._determine_paths_from_names(names)
         for path in paths:
-            confirmation = self._user_confirmation(f"Delete '{path.stem}' [y/n]: ")
+            confirmation = user_confirmation(f"Delete '{path.stem}' [y/n]: ")
             if confirmation:
                 path.unlink()
 
@@ -139,16 +140,4 @@ class Repo:
             return None
         if len(matches) == 1:
             return matches[0]
-        return self._user_choice(matches)
-
-    def _user_confirmation(self, prompt: str) -> bool:
-        answer = input(prompt)
-        return answer.lower() in ("y", "yes")
-
-    def _user_choice(self, choices: List[str]) -> str:
-        for i, choice in enumerate(choices):
-            print(f"{i+1}: {choice}")
-
-        selection = int(input("Choice: "))
-
-        return choices[selection - 1]
+        return user_choice(matches)
