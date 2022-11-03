@@ -7,7 +7,17 @@ from typing import Dict, List, Optional, Tuple
 
 from qn.config import Config
 from qn.log import CommandLogger
-from qn.shell import Shell
+from qn.shell import (
+    fzf,
+    git_add,
+    git_commit,
+    git_get_remote_url,
+    git_push,
+    git_status,
+    grep,
+    open_in_browser,
+    open_with_editor,
+)
 from qn.utils import user_choice, user_confirmation
 
 
@@ -15,20 +25,16 @@ class Repo:
 
     ENV_VAR = "QN_ROOT"
 
-    def __init__(
-        self, root: pathlib.Path, shell: Shell, logger: CommandLogger, config: Config
-    ) -> None:
-        self._root = root
-        self._logger = logger
-        self._shell = shell
+    def __init__(self, config: Config, logger: CommandLogger) -> None:
         self._config = config
+        self._logger = logger
 
     @property
     def notes(self) -> Dict[str, pathlib.Path]:
         paths = list(
             filter(
                 lambda n: n.is_file() and not n.stem.startswith("."),
-                self._root.iterdir(),
+                self._config.root.iterdir(),
             )
         )
         return {path.stem.lower(): path for path in paths}
@@ -37,9 +43,8 @@ class Repo:
     def create(cls) -> Repo:
         root = cls._determine_root()
         config = Config.parse_from_root(root)
-        shell = Shell(root=root, config=config)
         logger = CommandLogger(root)
-        return cls(root=root, shell=shell, logger=logger, config=config)
+        return cls(config=config, logger=logger)
 
     @classmethod
     def _determine_root(cls) -> pathlib.Path:
@@ -55,17 +60,20 @@ class Repo:
 
         return root
 
+    def chdir(self) -> None:
+        os.chdir(self._config.root)
+
     def add(self, name: str, exists_ok: bool) -> None:
         if not exists_ok and name in self.notes:
             raise FileExistsError(f"'{name}' already exists")
 
         path = self._determine_path_from_name(name)
-        self._shell.open_with_editor(paths=[path])
+        open_with_editor(paths=[path], editor=self._config.editor)
 
     def open(self, names: Tuple[str, ...]) -> None:
         names = names or self._interactively_retrieve_names()
         paths = self._determine_paths_from_names(names=names)
-        self._shell.open_with_editor(paths=paths)
+        open_with_editor(paths=paths, editor=self._config.editor)
 
     def list(self, reverse: bool = False) -> List[str]:
         return sorted(self.notes.keys(), reverse=reverse)
@@ -81,30 +89,30 @@ class Repo:
                 path.unlink()
 
     def grep(self, args: Tuple[str, ...]) -> None:
-        self._shell.grep(args=args)
+        grep(args=args, grep_cmd=self._config.grep_cmd)
 
     def status(self) -> None:
-        self._shell.git.status()
+        git_status()
 
     def sync(self) -> None:
-        self._shell.git.add()
-        self._shell.git.commit()
-        self._shell.git.push()
+        git_add()
+        git_commit()
+        git_push()
 
     def web(self) -> None:
-        url = self._shell.git.get_url()
-        self._shell.open_in_browser(url)
+        url = git_get_remote_url(self._config.git_remote_name)
+        open_in_browser(url)
 
     def log(self) -> None:
         self._logger.log()
 
     def config(self) -> None:
-        config_path = self._root.joinpath(self._config.FILE_PATH)
-        self._shell.open_with_editor([config_path])
+        config_path = self._config.root.joinpath(self._config.FILE_PATH)
+        open_with_editor(paths=[config_path], editor=self._config.editor)
 
     def _interactively_retrieve_names(self) -> Tuple[str, ...]:
         paths = list(self.notes.values())
-        names = self._shell.fzf(paths)
+        names = fzf(paths=paths, fzf_opts=self._config.fzf_opts)
         return names
 
     def _determine_paths_from_names(self, names: Tuple[str, ...]) -> List[pathlib.Path]:
@@ -122,7 +130,7 @@ class Repo:
         if not name.endswith(".md"):
             name += ".md"
 
-        path = self._root.joinpath(name)
+        path = self._config.root.joinpath(name)
         return path
 
     def _determine_closest_path_from_name(self, name: str) -> pathlib.Path:

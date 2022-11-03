@@ -18,7 +18,7 @@ class QnCLI(click.Group):
         try:
             super().invoke(*args, **kwargs)
         except Exception as e:
-            print(e)
+            print(f"Error: {e}")
             sys.exit(1)
 
 
@@ -30,6 +30,7 @@ def cli(ctx: click.Context) -> None:
     designed around speed and ease-of-use.
     """
     repo = Repo.create()
+    repo.chdir()  # Temporary change directory to qn root so all cmds can use relative paths
     ctx.obj = repo
     repo.log()
 
