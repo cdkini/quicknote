@@ -25,7 +25,10 @@ class Repo:
 
     ENV_VAR = "QN_ROOT"
 
-    def __init__(self, config: Config, logger: CommandLogger) -> None:
+    def __init__(
+        self, root: pathlib.Path, config: Config, logger: CommandLogger
+    ) -> None:
+        self._root = root
         self._config = config
         self._logger = logger
 
@@ -34,7 +37,7 @@ class Repo:
         paths = list(
             filter(
                 lambda n: n.is_file() and not n.stem.startswith("."),
-                self._config.root.iterdir(),
+                self._root.iterdir(),
             )
         )
         return {path.stem.lower(): path for path in paths}
@@ -44,7 +47,7 @@ class Repo:
         root = cls._determine_root()
         config = Config.parse_from_root(root)
         logger = CommandLogger(root)
-        return cls(config=config, logger=logger)
+        return cls(root=root, config=config, logger=logger)
 
     @classmethod
     def _determine_root(cls) -> pathlib.Path:
@@ -61,7 +64,7 @@ class Repo:
         return root
 
     def chdir(self) -> None:
-        os.chdir(self._config.root)
+        os.chdir(self._root)
 
     def add(self, name: str, exists_ok: bool) -> None:
         if not exists_ok and name in self.notes:
@@ -107,7 +110,7 @@ class Repo:
         self._logger.log()
 
     def config(self) -> None:
-        config_path = self._config.root.joinpath(self._config.FILE_PATH)
+        config_path = self._root.joinpath(self._config.FILE_PATH)
         open_with_editor(paths=[config_path], editor=self._config.editor)
 
     def _interactively_retrieve_names(self) -> Tuple[str, ...]:
@@ -130,7 +133,7 @@ class Repo:
         if not name.endswith(".md"):
             name += ".md"
 
-        path = self._config.root.joinpath(name)
+        path = self._root.joinpath(name)
         return path
 
     def _determine_closest_path_from_name(self, name: str) -> pathlib.Path:
