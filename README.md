@@ -1,8 +1,6 @@
 # quicknote (qn)
 *quicknote is a terminal-based notetaking system designed around speed and ease-of-use.*
 
-[![asciicast](https://asciinema.org/a/RD0hUf8RzdrSwZSy6zu7ZGwJT.svg)](https://asciinema.org/a/RD0hUf8RzdrSwZSy6zu7ZGwJT)
-
 The primary philosophy when designing this tool was to make recording quick thoughts or ideas as simple as possible without hampering productivity.
 For the terminal power user and UNIX enthusiast, having the ability to take notes in the same environment without context-switching is incredibly useful.
 
