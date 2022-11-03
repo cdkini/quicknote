@@ -1,11 +1,28 @@
-from typing import Tuple
+import sys
+from typing import Any, Tuple
 
 import click
 
 from qn.repo import Repo
 
 
-@click.group(name="qn")
+class QnCLI(click.Group):
+    def invoke(
+        self,
+        *args: Any,
+        **kwargs: Any,
+    ) -> Any:
+        """
+        Wrap invoke in try/except to remove stack traces from bad user commands.
+        """
+        try:
+            super().invoke(*args, **kwargs)
+        except Exception as e:
+            print(e)
+            sys.exit(1)
+
+
+@click.group(name="qn", cls=QnCLI)
 @click.pass_context
 def cli(ctx: click.Context) -> None:
     """
