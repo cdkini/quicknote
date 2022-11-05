@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-import json
 import pathlib
 from dataclasses import dataclass
+
+import toml
 
 
 @dataclass
 class Config:
 
-    FILE_PATH = ".config.json"
+    FILE_PATH = ".config.toml"
 
     def __init__(
         self,
@@ -31,10 +32,10 @@ class Config:
             return config
 
         with open(config_path) as f:
-            data = json.load(f)
+            data = toml.load(f)
         return cls(**data)
 
     def write_to_disk(self, path: pathlib.Path) -> None:
         data = self.__dict__
         with path.open("w") as f:
-            json.dump(data, f, indent=4)
+            toml.dump(data, f)

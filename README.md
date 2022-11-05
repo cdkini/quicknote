@@ -22,13 +22,11 @@ qn config
 
 ### Configuration
 I use the following settings (which require additional external dependencies of `nvim`, `rg`, and `bat`):
-```json
-{
-   "editor": "nvim",
-   "grep_cmd": "rg",
-   "git_remote_name": "origin",
-   "fzf_opts": "-m --preview \"bat --style=numbers --color=always --line-range :500 {}\""
-}
+```toml
+editor = "nvim"
+grep_cmd = "rg"
+git_remote_name = "origin"
+fzf_opts = "-m --preview \"bat --style=numbers --color=always --line-range :500 {}\""
 ```
 Additionally, I use [vimwiki](https://github.com/vimwiki/vimwiki) to leverage the library's referencing and tagging capabilities.
 
