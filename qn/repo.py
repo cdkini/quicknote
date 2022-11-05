@@ -5,6 +5,8 @@ import os
 import pathlib
 from typing import Dict, List, Optional, Tuple
 
+import click
+
 from qn.config import Config
 from qn.log import CommandLogger
 from qn.shell import (
@@ -15,10 +17,8 @@ from qn.shell import (
     git_push,
     git_status,
     grep,
-    open_in_browser,
     open_with_editor,
 )
-from qn.utils import user_choice, user_confirmation
 
 
 class Repo:
@@ -87,8 +87,7 @@ class Repo:
 
         paths = self._determine_paths_from_names(names)
         for path in paths:
-            confirmation = user_confirmation(f"Delete '{path.stem}' [y/n]: ")
-            if confirmation:
+            if click.confirm(f"Delete '{path.stem}'"):
                 path.unlink()
 
     def grep(self, args: Tuple[str, ...]) -> None:
@@ -104,7 +103,7 @@ class Repo:
 
     def web(self) -> None:
         url = git_get_remote_url(self._config.git_remote_name)
-        open_in_browser(url)
+        click.launch(url)
 
     def log(self) -> None:
         self._logger.log()
@@ -151,4 +150,13 @@ class Repo:
             return None
         if len(matches) == 1:
             return matches[0]
-        return user_choice(matches)
+        return self._user_choice(matches)
+
+    @staticmethod
+    def _user_choice(choices: List[str]) -> str:
+        for i, choice in enumerate(choices):
+            print(f"{i+1}: {choice}")
+
+        selection = int(input("Choice: "))
+
+        return choices[selection - 1]

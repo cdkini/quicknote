@@ -36,10 +36,6 @@ def open_with_editor(paths: List[pathlib.Path], editor: str) -> None:
     subprocess.call(command)
 
 
-def open_in_browser(url: str) -> None:
-    subprocess.call(["open", url])
-
-
 def grep(args: Tuple[str, ...], grep_cmd: str) -> None:
     command = [grep_cmd]
     for arg in args:
