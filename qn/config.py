@@ -16,12 +16,12 @@ class Config:
         editor: str = "vim",
         grep_cmd: str = "grep",
         git_remote_name: str = "origin",
-        fzf_opts: str = '-m --preview "cat {}"',
+        fzf_preview_opts: str = "cat {}",
     ) -> None:
         self.editor = editor
         self.grep_cmd = grep_cmd
         self.git_remote_name = git_remote_name
-        self.fzf_opts = fzf_opts
+        self.fzf_preview_opts = fzf_preview_opts
 
     @classmethod
     def parse_from_root(cls, root: pathlib.Path) -> Config:

@@ -114,7 +114,7 @@ class Repo:
 
     def _interactively_retrieve_names(self) -> Tuple[str, ...]:
         paths = list(self.notes.values())
-        names = fzf(paths=paths, fzf_opts=self._config.fzf_opts)
+        names = fzf(paths=paths, preview_opts=self._config.fzf_preview_opts)
         return names
 
     def _determine_paths_from_names(self, names: Tuple[str, ...]) -> List[pathlib.Path]:

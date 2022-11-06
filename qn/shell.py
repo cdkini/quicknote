@@ -43,14 +43,14 @@ def grep(args: Tuple[str, ...], grep_cmd: str) -> None:
     subprocess.call(command)
 
 
-def fzf(paths: List[pathlib.Path], fzf_opts: str) -> Tuple[str, ...]:
+def fzf(paths: List[pathlib.Path], preview_opts: str) -> Tuple[str, ...]:
     choices = sorted(map(lambda p: p.name, paths))
-    results = _fzf_prompt(choices=choices, fzf_options=fzf_opts)
+    results = _fzf_prompt(choices=choices, preview_opts=preview_opts)
     return tuple(results)
 
 
 # Refactored from pyfzf: https://github.com/nk412/pyfzf/blob/master/pyfzf/pyfzf.py
-def _fzf_prompt(choices: List[str], fzf_options: str = "") -> List[str]:
+def _fzf_prompt(choices: List[str], preview_opts: str) -> List[str]:
     if not shutil.which("fzf"):
         raise SystemError("Cannot find 'fzf' installed on PATH.")
 
@@ -63,8 +63,10 @@ def _fzf_prompt(choices: List[str], fzf_options: str = "") -> List[str]:
             input_file.write(choices_str.encode("utf-8"))
             input_file.flush()
 
+    fzf_opts = f'--preview "{preview_opts}"'
+
     # Invoke fzf externally and write to output file
-    os.system(f'fzf {fzf_options} < "{input_file.name}" > "{output_file.name}"')
+    os.system(f'fzf -m {fzf_opts} < "{input_file.name}" > "{output_file.name}"')
 
     # Get selected options
     selection = []
