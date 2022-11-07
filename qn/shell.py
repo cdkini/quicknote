@@ -23,8 +23,8 @@ def git_status() -> None:
     subprocess.call(["git", "status"])
 
 
-def git_get_remote_url(remote_name: str) -> str:
-    out = subprocess.check_output(["git", "remote", "get-url", remote_name])
+def git_get_remote_url() -> str:
+    out = subprocess.check_output(["git", "remote", "get-url", "origin"])
     return out.decode("utf-8").strip()
 
 
@@ -36,8 +36,8 @@ def open_with_editor(paths: List[pathlib.Path], editor: str) -> None:
     subprocess.call(command)
 
 
-def grep(args: Tuple[str, ...], grep_cmd: str) -> None:
-    command = [grep_cmd]
+def grep(args: Tuple[str, ...]) -> None:
+    command = ["rg"]
     for arg in args:
         command.append(arg)
     subprocess.call(command)

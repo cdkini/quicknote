@@ -7,7 +7,6 @@ from typing import Dict, List, Optional, Tuple
 
 import click
 
-from qn.config import Config
 from qn.log import CommandLogger
 from qn.shell import (
     fzf,
@@ -25,11 +24,9 @@ class Repo:
 
     ENV_VAR = "QN_ROOT"
 
-    def __init__(
-        self, root: pathlib.Path, config: Config, logger: CommandLogger
-    ) -> None:
+    def __init__(self, root: pathlib.Path, logger: CommandLogger) -> None:
         self._root = root
-        self._config = config
+        self._editor = os.environ.get("EDITOR", "vim")
         self._logger = logger
 
     @property
@@ -45,9 +42,8 @@ class Repo:
     @classmethod
     def create(cls) -> Repo:
         root = cls._determine_root()
-        config = Config.parse_from_root(root)
         logger = CommandLogger(root)
-        return cls(root=root, config=config, logger=logger)
+        return cls(root=root, logger=logger)
 
     @classmethod
     def _determine_root(cls) -> pathlib.Path:
@@ -71,12 +67,12 @@ class Repo:
             raise FileExistsError(f"'{name}' already exists")
 
         path = self._determine_path_from_name(name)
-        open_with_editor(paths=[path], editor=self._config.editor)
+        open_with_editor(paths=[path], editor=self._editor)
 
     def open(self, names: Tuple[str, ...]) -> None:
         names = names or self._interactively_retrieve_names()
         paths = self._determine_paths_from_names(names=names)
-        open_with_editor(paths=paths, editor=self._config.editor)
+        open_with_editor(paths=paths, editor=self._editor)
 
     def list(self, reverse: bool = False) -> List[str]:
         return sorted(self.notes.keys(), reverse=reverse)
@@ -91,7 +87,7 @@ class Repo:
                 path.unlink()
 
     def grep(self, args: Tuple[str, ...]) -> None:
-        grep(args=args, grep_cmd=self._config.grep_cmd)
+        grep(args=args)
 
     def status(self) -> None:
         git_status()
@@ -102,19 +98,18 @@ class Repo:
         git_push()
 
     def web(self) -> None:
-        url = git_get_remote_url(self._config.git_remote_name)
+        url = git_get_remote_url()
         click.launch(url)
 
     def log(self) -> None:
         self._logger.log()
 
-    def config(self) -> None:
-        config_path = self._root.joinpath(self._config.FILE_PATH)
-        open_with_editor(paths=[config_path], editor=self._config.editor)
-
     def _interactively_retrieve_names(self) -> Tuple[str, ...]:
         paths = list(self.notes.values())
-        names = fzf(paths=paths, preview_opts=self._config.fzf_preview_opts)
+        names = fzf(
+            paths=paths,
+            preview_opts="bat --style=numbers --color=always --line-range :500 {}",
+        )
         return names
 
     def _determine_paths_from_names(self, names: Tuple[str, ...]) -> List[pathlib.Path]:

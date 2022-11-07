@@ -35,15 +35,6 @@ def cli(ctx: click.Context) -> None:
     repo.log()
 
 
-@cli.command("config")
-@click.pass_obj
-def config_cmd(repo: Repo) -> None:
-    """
-    Configure settings.
-    """
-    repo.config()
-
-
 @cli.command("add")
 @click.pass_obj
 @click.argument("name", nargs=1)

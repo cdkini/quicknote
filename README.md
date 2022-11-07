@@ -9,26 +9,16 @@ If you take meticulous, interconnected notes through a more robust PKM system, p
 
 ### Setup
 ```bash
-# 1. Install quicknote and any required CLI tools
+# Install quicknote and any required external dependencies
 pip install git+https://github.com/cdkini/quicknote.git
-brew install fzf
+brew install fzf ripgrep bat
 
-# 2. Point your root env var at your desired notes directory
+# Point your root env var at your desired notes directory
 export QN_ROOT=$HOME/notes # Or other existing directory
 
-# 3. Configure any relevant settings you might want
-qn config
+# Configure your editor
+export EDITOR="nvim" # Or other valid terminal-based editor
 ```
-
-### Configuration
-I use the following settings (which require additional external dependencies of `nvim`, `rg`, and `bat`):
-```toml
-editor = "nvim"
-grep_cmd = "rg"
-git_remote_name = "origin"
-fzf_preview_opts = "bat --style=numbers --color=always --line-range :500 {}"
-```
-Additionally, I use [vimwiki](https://github.com/vimwiki/vimwiki) to leverage the library's referencing and tagging capabilities.
 
 ### Commands
 ```
@@ -41,7 +31,6 @@ Primary Commands:
   rm      Delete note(s).
 
 Misc Commands:
-  config  Configure settings.
   status  Get status of notes with Git.
   sync    Sync notes with GitHub.
   web     Open notes in GitHub.
