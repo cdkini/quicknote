@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import difflib
 import os
 import pathlib
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 import click
+from thefuzz import process
 
 from qn.log import CommandLogger
 from qn.shell import (
@@ -23,6 +23,7 @@ from qn.shell import (
 class Repo:
 
     ENV_VAR = "QN_ROOT"
+    FUZZ_THRESHOLD = 80
 
     def __init__(self, root: pathlib.Path, logger: CommandLogger) -> None:
         self._root = root
@@ -118,7 +119,8 @@ class Repo:
         for name in names:
             path = self._determine_path_from_name(name)
             if not path.exists():
-                path = self._determine_closest_path_from_name(name)
+                closest_name = self._find_closest_name(name)
+                path = self._determine_path_from_name(closest_name)
             paths.append(path)
 
         return paths
@@ -130,28 +132,22 @@ class Repo:
         path = self._root.joinpath(name)
         return path
 
-    def _determine_closest_path_from_name(self, name: str) -> pathlib.Path:
-        closest_name = self._find_closest_name(name)
-        if closest_name is None:
-            raise FileNotFoundError(f"'{name}' does not exist")
+    def _find_closest_name(self, name: str) -> str:
+        lname = name.lower()
+        names = list(self.notes.keys())
+        best_matches: List[Tuple[str, int]] = process.extractBests(
+            query=lname, choices=names
+        )
 
-        return self._determine_path_from_name(closest_name)
+        if best_matches[0][1] < self.FUZZ_THRESHOLD:
+            raise ValueError(
+                f"Could not find a note corresponding to input query '{name}'"
+            )
+        elif best_matches[0][1] == best_matches[1][1]:
+            msg = f"Ambiguous query; multiple matches found corresponding to input query '{name}'"
+            for name, score in best_matches:
+                if score == best_matches[0][1]:
+                    msg += f"\n  * {name}: {score}% match"
+            raise ValueError(msg)
 
-    def _find_closest_name(self, name: str) -> Optional[str]:
-        name = name.lower()
-        names = [name.lower() for name in self.notes.keys()]
-        matches = difflib.get_close_matches(name, names)
-        if len(matches) == 0:
-            return None
-        if len(matches) == 1:
-            return matches[0]
-        return self._user_choice(matches)
-
-    @staticmethod
-    def _user_choice(choices: List[str]) -> str:
-        for i, choice in enumerate(choices):
-            print(f"{i+1}: {choice}")
-
-        selection = int(input("Choice: "))
-
-        return choices[selection - 1]
+        return best_matches[0][0]
